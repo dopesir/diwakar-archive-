@@ -1724,6 +1724,12 @@ footer {
   letter-spacing: 0.1em;
   color: var(--smoke);
   text-decoration: none;
+  /* ≥44px tap target without changing the visual layout */
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 0 0.4rem;
+  margin: -0.55rem -0.4rem;
   transition: color 0.2s;
 }
 .footer-soc a:hover {
