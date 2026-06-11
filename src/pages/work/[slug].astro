@@ -1,0 +1,46 @@
+---
+import { getCollection, render } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import DetailLayout from '../../components/DetailLayout.astro';
+
+export async function getStaticPaths() {
+  const work = (await getCollection('work', ({ data }) => !data.draft)).sort(
+    (a, b) => b.data.year - a.data.year || a.data.title.localeCompare(b.data.title),
+  );
+  return work.map((entry, i) => ({
+    params: { slug: entry.id },
+    props: { entry, index: i, prev: work[i - 1] ?? null, next: work[i + 1] ?? null },
+  }));
+}
+
+const { entry, index, prev, next } = Astro.props;
+const { Content } = await render(entry);
+const { title, year, location, image, caption } = entry.data;
+
+const descBase = caption ?? `${title}${location ? ' — ' + location : ''} · ${year}`;
+const description = `${descBase}. From the Purushottam Diwakar Legacy Archive.`;
+const prevLink = prev ? { href: `/work/${prev.id}/`, title: prev.data.title } : null;
+const nextLink = next ? { href: `/work/${next.id}/`, title: next.data.title } : null;
+---
+
+<Base
+  title={`${title} — Work — P. Diwakar Archive`}
+  description={description}
+  ogImage={image}
+  ogType="article"
+>
+  <DetailLayout
+    kind="Work"
+    baseHref="/work/"
+    title={title}
+    metaItems={[location, String(year), caption]}
+    image={image}
+    imageAlt={caption ?? title}
+    lightbox={!!image}
+    placeholderIndex={index}
+    prev={prevLink}
+    next={nextLink}
+  >
+    <Content />
+  </DetailLayout>
+</Base>

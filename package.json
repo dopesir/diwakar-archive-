@@ -1,0 +1,24 @@
+{
+  "name": "diwakar-archive",
+  "type": "module",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Purushottam Diwakar — Legacy Archive. Static Astro portfolio site.",
+  "scripts": {
+    "dev": "astro dev",
+    "start": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "astro": "astro",
+    "prepare-images": "node scripts/prepare-images.mjs"
+  },
+  "dependencies": {
+    "@astrojs/sitemap": "^3",
+    "@fontsource-variable/manrope": "^5",
+    "@fontsource/cormorant-garamond": "^5",
+    "astro": "^5"
+  },
+  "devDependencies": {
+    "sharp": "^0.33"
+  }
+}

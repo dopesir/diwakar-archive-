@@ -1,0 +1,26 @@
+# Security headers for Cloudflare Pages / Netlify (both read public/_headers).
+# The site is fully static; the main pages need only same-origin resources.
+# The /admin/ route additionally loads Sveltia CMS from unpkg and talks to GitHub.
+#
+# 'unsafe-inline' is required for script-src/style-src because Astro 5 renders its
+# (first-party, build-time) scripts and small stylesheets inline. There is no
+# runtime injection surface on this static site — no server, no reflected query
+# params, no visitor-supplied HTML — so this is a safe, standard relaxation. No
+# third-party script ORIGIN is allowed on the main site; only same-origin + unpkg
+# (admin) can load. To drop 'unsafe-inline' entirely, enable Astro's hash-based
+# `experimental.csp` and move the policy to <meta>.
+
+/*
+  X-Frame-Options: DENY
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin
+  Permissions-Policy: camera=(), microphone=(), geolocation=()
+  Content-Security-Policy: default-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline'; font-src 'self'; connect-src 'self'; object-src 'none'; base-uri 'self'; frame-ancestors 'none'; form-action 'self'; upgrade-insecure-requests
+
+# More specific path wins: relax the CSP for the CMS only.
+/admin/*
+  X-Frame-Options: DENY
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin
+  Permissions-Policy: camera=(), microphone=(), geolocation=()
+  Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline' https://unpkg.com; style-src 'self' 'unsafe-inline' https://unpkg.com; img-src 'self' data: blob: https:; font-src 'self' data: https://unpkg.com; connect-src 'self' https://unpkg.com https://api.github.com https://github.com; frame-src 'self'; object-src 'none'; base-uri 'self'

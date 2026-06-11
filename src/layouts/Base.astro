@@ -1,0 +1,81 @@
+---
+// Manrope variable (subsets unicode-range-gated); Cormorant trimmed to latin
+// for English content (§9.5). font-display:swap is the @fontsource default.
+import '@fontsource-variable/manrope';
+import '@fontsource/cormorant-garamond/latin-400.css';
+import '@fontsource/cormorant-garamond/latin-600.css';
+import '@fontsource/cormorant-garamond/latin-300-italic.css';
+import '@fontsource/cormorant-garamond/latin-400-italic.css';
+import '../styles/global.css';
+
+import { getImage } from 'astro:assets';
+import type { ImageMetadata } from 'astro';
+import defaultOg from '../assets/hero/desktop/01-diwali-lanterns-jaipur.jpg';
+import Nav from '../components/Nav.astro';
+import Footer from '../components/Footer.astro';
+import CustomCursor from '../components/CustomCursor.astro';
+import Lightbox from '../components/Lightbox.astro';
+import ConnectCta from '../components/ConnectCta.astro';
+
+interface Props {
+  title: string;
+  description: string;
+  ogImage?: ImageMetadata;
+  ogType?: string;
+  /** Home page only: nav starts transparent over the hero, then turns solid on scroll. */
+  home?: boolean;
+}
+
+const { title, description, ogImage, ogType = 'website', home = false } = Astro.props;
+
+const canonical = new URL(Astro.url.pathname, Astro.site).toString();
+const og = await getImage({
+  src: ogImage ?? defaultOg,
+  width: 1200,
+  height: 630,
+  format: 'jpg',
+  fit: 'cover',
+});
+const ogUrl = new URL(og.src, Astro.site).toString();
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="theme-color" content="#0a0806" />
+    <meta name="generator" content={Astro.generator} />
+
+    <!-- OpenGraph / Twitter -->
+    <meta property="og:type" content={ogType} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:image" content={ogUrl} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:site_name" content="Purushottam Diwakar — Legacy Archive" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogUrl} />
+
+    <slot name="head" />
+  </head>
+  <body>
+    <a href="#main" class="skip-link">Skip to content</a>
+    <CustomCursor />
+    <Nav home={home} path={Astro.url.pathname} />
+    <main id="main">
+      <slot />
+    </main>
+    {Astro.url.pathname !== '/connect/' && <ConnectCta />}
+    <Footer />
+    <Lightbox />
+  </body>
+</html>

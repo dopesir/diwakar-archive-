@@ -1,0 +1,59 @@
+---
+// Ochre dot + trailing ring. Fine pointers only; the trailing lerp is disabled
+// under prefers-reduced-motion (§4). cursor:none is applied (via the `cursor-on`
+// class on <html>) ONLY once the custom cursor is actually active.
+---
+
+<div class="cur" id="cur" aria-hidden="true">
+  <div class="cur-dot"></div>
+  <div class="cur-ring"></div>
+</div>
+
+<script>
+  const fine = window.matchMedia('(pointer: fine)').matches;
+  const cur = document.getElementById('cur');
+
+  if (fine && cur) {
+    const dot = cur.querySelector('.cur-dot') as HTMLElement | null;
+    const ring = cur.querySelector('.cur-ring') as HTMLElement | null;
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const HOVER_SEL =
+      'a,button,.work-card,.feat-item,.soc-link,.imagine-img-wrap,.press-img-wrap,.hs-dot,.lb-btn,.lb-close,[data-lb]';
+
+    let activated = false;
+    let mx = 0,
+      my = 0,
+      rx = 0,
+      ry = 0;
+
+    document.addEventListener('mousemove', (e) => {
+      if (!activated) {
+        activated = true;
+        document.documentElement.classList.add('cursor-on');
+      }
+      mx = e.clientX;
+      my = e.clientY;
+      if (dot) dot.style.transform = `translate(${mx}px,${my}px)`;
+      if (reduce && ring) ring.style.transform = `translate(${mx}px,${my}px)`;
+    });
+
+    if (!reduce && ring) {
+      const tick = () => {
+        rx += (mx - rx) * 0.18;
+        ry += (my - ry) * 0.18;
+        ring.style.transform = `translate(${rx}px,${ry}px)`;
+        requestAnimationFrame(tick);
+      };
+      requestAnimationFrame(tick);
+    }
+
+    document.addEventListener('mouseover', (e) => {
+      const t = e.target;
+      if (t instanceof Element && t.closest(HOVER_SEL)) cur.classList.add('hov');
+    });
+    document.addEventListener('mouseout', (e) => {
+      const t = e.target;
+      if (t instanceof Element && t.closest(HOVER_SEL)) cur.classList.remove('hov');
+    });
+  }
+</script>

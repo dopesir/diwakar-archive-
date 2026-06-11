@@ -1,0 +1,158 @@
+---
+import { getCollection } from 'astro:content';
+import { getImage, Picture } from 'astro:assets';
+import Base from '../layouts/Base.astro';
+import HeroSlider from '../components/HeroSlider.astro';
+import StatCounter from '../components/StatCounter.astro';
+import Reveal from '../components/Reveal.astro';
+
+const ordered = (await getCollection('hero')).sort((a, b) => a.data.order - b.data.order);
+
+const featured = (await getCollection('work', ({ data }) => !data.draft))
+  .filter((w) => w.data.featured)
+  .sort((a, b) => b.data.year - a.data.year);
+
+// Preload slide 1's first mobile + desktop variants (matching media) — §7.3.
+// Width/format/quality MUST match the exact variants HeroSlider emits for slide 1
+// (mobile avif 640@q54, desktop avif 1280@q52) so the preload hits a real file
+// the slider references rather than fetching an unused one (v4 bug #3).
+const s1 = ordered[0].data;
+const s1desk = await getImage({ src: s1.imageDesktop, width: 1280, format: 'avif', quality: 52 });
+const s1mob = await getImage({
+  src: s1.imageMobile ?? s1.imageDesktop,
+  width: 640,
+  format: 'avif',
+  quality: 54,
+});
+
+const description =
+  'Purushottam Diwakar — 27 years of photojournalism with the India Today Group. A silent observer and visual archivist of the un-staged truth of India.';
+---
+
+<Base title="Purushottam Diwakar — Legacy Archive" description={description} home={true} ogImage={s1.imageDesktop}>
+  <Fragment slot="head">
+    <link rel="preload" as="image" href={s1mob.src} type="image/avif" media="(max-width: 760px)" />
+    <link rel="preload" as="image" href={s1desk.src} type="image/avif" media="(min-width: 761px)" />
+  </Fragment>
+
+  <HeroSlider slides={ordered} />
+
+  <div class="home-body">
+    <section class="intro-grid fu" aria-label="Introduction">
+      <div class="intro-text">
+        <p class="eyebrow">The Eye Behind the Frame</p>
+        <p>
+          Purushottam Diwakar has been a quiet witness to the Indian subcontinent for over 27
+          years. Senior Photojournalist with the India Today Group since 1998, his work appears on
+          the magazine’s cover and in international publications worldwide.
+        </p>
+        <p>
+          His work spans drought chronicles, tribal ceremonies, political upheaval, and the quiet
+          dignities of daily desert life. He has photographed four continents and contributed over
+          1,300 images to Getty Images.
+        </p>
+        <p class="sig">Witness · Humanist · Archivist</p>
+      </div>
+      <StatCounter />
+    </section>
+
+    <section class="featured fu" aria-label="Selected frames">
+      <h2 class="feat-label">Selected Frames</h2>
+      <div class="feat-grid">
+        {
+          featured.map((f) => (
+            <a class="feat-item" href={`/work/${f.id}/`}>
+              <div class="feat-frame">
+                <Picture
+                  src={f.data.image!}
+                  alt={f.data.caption ?? f.data.title}
+                  widths={[600, 1000, 1400]}
+                  sizes="(max-width: 760px) 92vw, (max-width: 920px) 45vw, 600px"
+                  formats={['avif', 'webp']}
+                  fallbackFormat="jpg"
+                  quality={72}
+                  loading="lazy"
+                  decoding="async"
+                />
+                <div class="feat-grain" />
+                <div class="feat-veil" />
+                <div class="feat-expand">
+                  <svg viewBox="0 0 18 18" aria-hidden="true">
+                    <path d="M2 7V2h5M11 2h5v5M16 11v5h-5M7 16H2v-5" />
+                  </svg>
+                </div>
+              </div>
+              <div class="feat-cap">{f.data.title}</div>
+              <div class="feat-yr">{f.data.year}</div>
+            </a>
+          ))
+        }
+      </div>
+    </section>
+  </div>
+
+  <canvas id="dust-c" aria-hidden="true"></canvas>
+  <Reveal />
+
+  <script>
+    // Dust-mote overlay — home only, motion only, paused when the tab is hidden.
+    const cv = document.getElementById('dust-c') as HTMLCanvasElement | null;
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const ctx = cv?.getContext('2d');
+    if (cv && ctx && !reduce) {
+      let W = innerWidth,
+        H = innerHeight;
+      cv.width = W;
+      cv.height = H;
+      const motes = Array.from({ length: 70 }, () => ({
+        x: Math.random() * W,
+        y: Math.random() * H,
+        r: Math.random() * 1.1 + 0.25,
+        vx: (Math.random() - 0.5) * 0.13,
+        vy: -Math.random() * 0.055 - 0.015,
+        a: Math.random() * 0.2 + 0.04,
+        life: Math.random(),
+      }));
+      let run = false,
+        raf = 0;
+      const draw = () => {
+        if (!run) return;
+        raf = requestAnimationFrame(draw);
+        ctx.clearRect(0, 0, W, H);
+        for (const m of motes) {
+          m.x += m.vx;
+          m.y += m.vy;
+          m.life += 0.0018;
+          if (m.life > 1) {
+            m.life = 0;
+            m.x = Math.random() * W;
+            m.y = H + 8;
+          }
+          const f = Math.sin(m.life * Math.PI);
+          ctx.beginPath();
+          ctx.arc(m.x, m.y, m.r, 0, 2 * Math.PI);
+          ctx.fillStyle = `rgba(200,168,120,${m.a * f})`;
+          ctx.fill();
+        }
+      };
+      const start = () => {
+        if (run) return;
+        run = true;
+        cv.classList.add('on');
+        draw();
+      };
+      const stop = () => {
+        run = false;
+        cancelAnimationFrame(raf);
+      };
+      addEventListener('resize', () => {
+        W = innerWidth;
+        H = innerHeight;
+        cv.width = W;
+        cv.height = H;
+      });
+      document.addEventListener('visibilitychange', () => (document.hidden ? stop() : start()));
+      setTimeout(start, 600);
+    }
+  </script>
+</Base>

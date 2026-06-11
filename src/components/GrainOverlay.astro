@@ -1,0 +1,28 @@
+---
+// Reusable film-grain layer (inline feTurbulence noise as a data URI). Place
+// inside a `position:relative` parent. Used to texture gradient placeholders
+// and detail heroes.
+interface Props {
+  opacity?: number;
+  baseFrequency?: number;
+}
+const { opacity = 0.5, baseFrequency = 0.9 } = Astro.props;
+const noise = `data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='gr'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='${baseFrequency}' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23gr)' opacity='.05'/%3E%3C/svg%3E`;
+---
+
+<div
+  class="grain-layer"
+  aria-hidden="true"
+  style={`opacity:${opacity};background-image:url("${noise}")`}
+>
+</div>
+
+<style>
+  .grain-layer {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    mix-blend-mode: multiply;
+    background-repeat: repeat;
+  }
+</style>

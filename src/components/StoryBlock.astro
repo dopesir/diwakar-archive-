@@ -1,0 +1,29 @@
+---
+import type { CollectionEntry } from 'astro:content';
+
+interface Props {
+  entry: CollectionEntry<'stories'>;
+  index: number;
+}
+const { entry, index } = Astro.props;
+const { title, date, quote, mood } = entry.data;
+
+const raw = (entry.body ?? '')
+  .replace(/<!--[\s\S]*?-->/g, '')
+  .replace(/\s+/g, ' ')
+  .trim();
+const excerpt = raw.length > 200 ? raw.slice(0, 200).replace(/\s+\S*$/, '') + '…' : raw;
+const delay = (index % 5) * 0.08;
+---
+
+<a
+  class={`story-block fu${mood ? ' mood-' + mood : ''}`}
+  href={`/stories/${entry.id}/`}
+  style={`transition-delay:${delay}s`}
+>
+  <div class="s-date">{date}</div>
+  <h2 class="s-title">{title}</h2>
+  <p class="s-body">{excerpt}</p>
+  {quote && <div class="s-quote">{quote}</div>}
+  <span class="s-more">Read the story →</span>
+</a>

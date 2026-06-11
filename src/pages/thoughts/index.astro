@@ -1,0 +1,25 @@
+---
+import { getCollection } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import ThoughtBlock from '../../components/ThoughtBlock.astro';
+import Reveal from '../../components/Reveal.astro';
+
+const thoughts = (await getCollection('thoughts', ({ data }) => !data.draft)).sort(
+  (a, b) => b.data.year - a.data.year,
+);
+const description =
+  'Behind the frame — reflections on ethics, restraint and the choices a photojournalist makes, by Purushottam Diwakar.';
+---
+
+<Base title="Thoughts — Purushottam Diwakar Archive" description={description}>
+  <div class="thoughts-bg">
+    <section class="sec">
+      <p class="sec-eyebrow">Behind the Frame</p>
+      <h1 class="sec-title fu">The story behind the story</h1>
+      <div>
+        {thoughts.map((entry, i) => <ThoughtBlock entry={entry} index={i} />)}
+      </div>
+    </section>
+  </div>
+  <Reveal />
+</Base>

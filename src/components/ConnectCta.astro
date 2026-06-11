@@ -1,0 +1,45 @@
+---
+// Site-wide pre-footer: the Connect & Collaborate call-to-action shown as the
+// last section of every page (Base.astro skips it on /connect/, which carries
+// the full-page version of the same content).
+import SocialLinks from './SocialLinks.astro';
+---
+
+<section class="connect-cta" aria-label="Connect and collaborate">
+  <p class="sec-eyebrow">Connect &amp; Collaborate</p>
+  <h2>Find the work online.</h2>
+  <p class="connect-cta-body">
+    For exhibitions, editorial licensing, collaborations, or limited edition prints. Over 1,300
+    images available on Getty Images for immediate licensing.
+  </p>
+  <SocialLinks />
+  <p class="soc-note">Representation by invitation only · India Today Group</p>
+</section>
+
+<style>
+  .connect-cta {
+    max-width: 700px;
+    margin: 0 auto;
+    padding: 4.5rem 2rem 4rem;
+    text-align: center;
+    border-top: 1px solid rgba(0, 0, 0, 0.08);
+  }
+  .connect-cta h2 {
+    font-size: clamp(1.6rem, 3.6vw, 2.4rem);
+    font-weight: 700;
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+    margin: 0.9rem 0 1.2rem;
+  }
+  .connect-cta-body {
+    font-size: 0.92rem;
+    line-height: 1.7;
+    color: var(--smoke);
+    margin-bottom: 1.8rem;
+  }
+  @media (max-width: 480px) {
+    .connect-cta {
+      padding: 3rem 1.2rem 2.5rem;
+    }
+  }
+</style>

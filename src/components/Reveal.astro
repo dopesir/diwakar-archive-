@@ -1,0 +1,25 @@
+---
+// One shared IntersectionObserver per page for `.fu` fade-up reveals (§8.2).
+// Under reduced motion the elements are simply marked visible.
+---
+
+<script>
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const els = document.querySelectorAll('.fu');
+  if (reduce || !('IntersectionObserver' in window)) {
+    els.forEach((el) => el.classList.add('vis'));
+  } else {
+    const obs = new IntersectionObserver(
+      (entries) => {
+        for (const e of entries) {
+          if (e.isIntersecting) {
+            e.target.classList.add('vis');
+            obs.unobserve(e.target);
+          }
+        }
+      },
+      { threshold: 0.07, rootMargin: '0px 0px -30px 0px' },
+    );
+    els.forEach((el) => obs.observe(el));
+  }
+</script>

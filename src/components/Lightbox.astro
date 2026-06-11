@@ -1,0 +1,137 @@
+---
+// Per-page lightbox. Triggers are any element on the CURRENT page carrying
+// `data-lb` (full-size src) and optional `data-lbcap` (caption). Because every
+// route is its own document, scope is naturally per-page (§8.7). Focus is
+// trapped while open and returned to the trigger on close.
+---
+
+<div id="lb" class="lb" role="dialog" aria-modal="true" aria-label="Photo viewer" tabindex="-1">
+  <button class="lb-close" id="lbClose" aria-label="Close photo viewer">&#10005;</button>
+  <button class="lb-btn lb-prev" id="lbPrev" aria-label="Previous photo">
+    <svg viewBox="0 0 26 26" aria-hidden="true"><polyline points="17,4 9,13 17,22"></polyline></svg>
+  </button>
+  <img class="lb-img" id="lbImg" src="" alt="" />
+  <button class="lb-btn lb-next" id="lbNext" aria-label="Next photo">
+    <svg viewBox="0 0 26 26" aria-hidden="true"><polyline points="9,4 17,13 9,22"></polyline></svg>
+  </button>
+  <div class="lb-cap" id="lbCap"></div>
+  <div class="lb-idx" id="lbIdx"></div>
+</div>
+
+<script>
+  const lb = document.getElementById('lb');
+  const lbImg = document.getElementById('lbImg') as HTMLImageElement | null;
+  const lbCap = document.getElementById('lbCap');
+  const lbIdx = document.getElementById('lbIdx');
+  const lbClose = document.getElementById('lbClose');
+  const lbPrev = document.getElementById('lbPrev');
+  const lbNext = document.getElementById('lbNext');
+
+  if (lb && lbImg && lbCap && lbIdx) {
+    type Item = { src: string; cap: string };
+    let items: Item[] = [];
+    let i = 0;
+    let trigger: HTMLElement | null = null;
+
+    const focusable = [lbClose, lbPrev, lbNext].filter(Boolean) as HTMLElement[];
+
+    function collect() {
+      items = Array.from(document.querySelectorAll<HTMLElement>('[data-lb]')).map((el) => ({
+        src: el.dataset.lb || '',
+        cap: el.dataset.lbcap || '',
+      }));
+    }
+    function show() {
+      const it = items[i];
+      if (!it) return;
+      lbImg!.src = it.src;
+      lbImg!.alt = it.cap;
+      lbCap!.textContent = it.cap;
+      lbIdx!.textContent = items.length > 1 ? `${i + 1} / ${items.length}` : '';
+      const multi = items.length > 1;
+      lbPrev?.toggleAttribute('hidden', !multi);
+      lbNext?.toggleAttribute('hidden', !multi);
+    }
+    function open(idx: number, fromEl: HTMLElement) {
+      collect();
+      trigger = fromEl;
+      i = Math.max(0, Math.min(idx, items.length - 1));
+      show();
+      lb!.classList.add('open');
+      document.body.style.overflow = 'hidden';
+      lbClose?.focus();
+    }
+    function close() {
+      lb!.classList.remove('open');
+      document.body.style.overflow = '';
+      window.setTimeout(() => {
+        if (lbImg) lbImg.src = '';
+      }, 350);
+      trigger?.focus();
+    }
+    const prev = () => {
+      i = (i - 1 + items.length) % items.length;
+      show();
+    };
+    const next = () => {
+      i = (i + 1) % items.length;
+      show();
+    };
+
+    lbClose?.addEventListener('click', close);
+    lbPrev?.addEventListener('click', prev);
+    lbNext?.addEventListener('click', next);
+    lb.addEventListener('click', (e) => {
+      if (e.target === lb) close();
+    });
+
+    // open from any [data-lb] trigger on this page
+    document.addEventListener('click', (e) => {
+      const t = e.target;
+      if (!(t instanceof Element)) return;
+      const el = t.closest<HTMLElement>('[data-lb]');
+      if (!el) return;
+      e.preventDefault();
+      collect();
+      const idx = items.findIndex((it) => it.src === el.dataset.lb);
+      open(idx >= 0 ? idx : 0, el);
+    });
+
+    // keyboard: esc / arrows + focus trap
+    document.addEventListener('keydown', (e) => {
+      if (!lb.classList.contains('open')) return;
+      if (e.key === 'Escape') close();
+      else if (e.key === 'ArrowLeft' && items.length > 1) prev();
+      else if (e.key === 'ArrowRight' && items.length > 1) next();
+      else if (e.key === 'Tab') {
+        // trap focus within the dialog controls
+        const visible = focusable.filter((el) => !el.hasAttribute('hidden'));
+        if (visible.length === 0) return;
+        const first = visible[0];
+        const last = visible[visible.length - 1];
+        const act = document.activeElement;
+        if (e.shiftKey && act === first) {
+          e.preventDefault();
+          last.focus();
+        } else if (!e.shiftKey && act === last) {
+          e.preventDefault();
+          first.focus();
+        } else if (!visible.includes(act as HTMLElement)) {
+          e.preventDefault();
+          first.focus();
+        }
+      }
+    });
+
+    // swipe
+    let tx: number | null = null;
+    lb.addEventListener('touchstart', (e) => (tx = e.touches[0].clientX), { passive: true });
+    lb.addEventListener('touchend', (e) => {
+      if (tx === null) return;
+      const dx = e.changedTouches[0].clientX - tx;
+      tx = null;
+      if (Math.abs(dx) < 40 || items.length < 2) return;
+      dx < 0 ? next() : prev();
+    });
+  }
+</script>

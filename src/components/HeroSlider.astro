@@ -1,0 +1,286 @@
+---
+import { getImage } from 'astro:assets';
+import type { CollectionEntry } from 'astro:content';
+
+interface Props {
+  slides: CollectionEntry<'hero'>[];
+}
+const { slides } = Astro.props;
+const ordered = [...slides].sort((a, b) => a.data.order - b.data.order);
+
+// Build art-directed source sets. Every emitted variant must stay < 500 KB (§1),
+// so desktop AVIF/WebP top out at 1800px and the JPEG fallback at 1280px — the
+// source originals are already capped at 1800px by prepare-images. Mobile
+// sources (≤760px) come from imageMobile when present, else the desktop original
+// (cropped by object-fit/object-position, §7.3) — phones never pull a desktop
+// variant.
+const DESK = [1280, 1800];
+const DESK_JPG = [1280];
+const MOB = [640, 960, 1280];
+
+const slideData = await Promise.all(
+  ordered.map(async (s) => {
+    const desk = s.data.imageDesktop;
+    const mob = s.data.imageMobile ?? s.data.imageDesktop;
+    const [dAvif, dWebp, dJpg, mAvif, mWebp, mJpg] = await Promise.all([
+      getImage({ src: desk, widths: DESK, format: 'avif', quality: 52 }),
+      getImage({ src: desk, widths: DESK, format: 'webp', quality: 58 }),
+      getImage({ src: desk, widths: DESK_JPG, format: 'jpg', quality: 66 }),
+      getImage({ src: mob, widths: MOB, format: 'avif', quality: 54 }),
+      getImage({ src: mob, widths: MOB, format: 'webp', quality: 60 }),
+      getImage({ src: mob, widths: MOB, format: 'jpg', quality: 66 }),
+    ]);
+    return { d: s.data, dAvif, dWebp, dJpg, mAvif, mWebp, mJpg };
+  }),
+);
+
+const count = slideData.length;
+const pad = (n: number) => String(n).padStart(2, '0');
+---
+
+<section
+  id="hero"
+  class="hero"
+  aria-roledescription="carousel"
+  aria-label="Featured photographs"
+>
+  <div class="hs-bars" aria-hidden="true">
+    <div class="hs-bar-t"></div>
+    <div class="hs-bar-b"></div>
+  </div>
+
+  <div class="hs-track" id="hsTrack">
+    {
+      slideData.map((s, i) => (
+        <div
+          class={`hs-slide ${i === 0 ? 'hs-active ' : ''}${s.d.tone === 'bright' ? 'hs-bright' : 'hs-dark'}`}
+          role="group"
+          aria-roledescription="slide"
+          aria-label={`${i + 1} of ${count}: ${s.d.location}`}
+        >
+          <picture class="hs-pic">
+            <source type="image/avif" media="(max-width: 760px)" srcset={s.mAvif.srcSet.attribute} sizes="100vw" />
+            <source type="image/webp" media="(max-width: 760px)" srcset={s.mWebp.srcSet.attribute} sizes="100vw" />
+            <source type="image/jpeg" media="(max-width: 760px)" srcset={s.mJpg.srcSet.attribute} sizes="100vw" />
+            <source type="image/avif" srcset={s.dAvif.srcSet.attribute} sizes="100vw" />
+            <source type="image/webp" srcset={s.dWebp.srcSet.attribute} sizes="100vw" />
+            <source type="image/jpeg" srcset={s.dJpg.srcSet.attribute} sizes="100vw" />
+            <img
+              class="hs-img"
+              src={s.dJpg.src}
+              alt={s.d.title}
+              width={s.dJpg.attributes.width}
+              height={s.dJpg.attributes.height}
+              style={`object-position:${s.d.position}`}
+              loading={i === 0 ? 'eager' : 'lazy'}
+              fetchpriority={i === 0 ? 'high' : undefined}
+              decoding="async"
+            />
+          </picture>
+          <div class="hs-scrim"></div>
+          <div class="hs-grain" aria-hidden="true"></div>
+          <div class="hs-tag">
+            <span class="hs-tag-loc">{s.d.location}</span>
+            <span class="hs-tag-title">{s.d.title}</span>
+          </div>
+        </div>
+      ))
+    }
+  </div>
+
+  <div class="hero-over" aria-hidden="true"></div>
+
+  <div class="hero-text-wrap">
+    <span class="hero-eyebrow">Decades of Vision · Rajasthan · India</span>
+    <h1 class="hero-title">Purushottam<br />Diwakar</h1>
+    <p class="hero-sub">
+      “A photojournalist is a one&#8209;man army. Every picture must tell its own story.”
+    </p>
+  </div>
+
+  <div class="hs-counter" id="hsCounter" aria-hidden="true">{`${pad(1)} / ${pad(count)}`}</div>
+
+  <div class="hs-dots" id="hsDots" aria-label="Choose slide">
+    {
+      slideData.map((_, i) => (
+        <button class={`hs-dot${i === 0 ? ' active' : ''}`} type="button" data-i={i} aria-label={`Go to slide ${i + 1}`} />
+      ))
+    }
+  </div>
+
+  <div class="hs-progress" id="hsProgress" aria-hidden="true"></div>
+
+  <button class="hs-nav hs-nav-prev" id="hsPrev" type="button" aria-label="Previous slide">
+    <svg viewBox="0 0 36 36" aria-hidden="true"><polyline points="22,8 12,18 22,28"></polyline></svg>
+  </button>
+  <button class="hs-nav hs-nav-next" id="hsNext" type="button" aria-label="Next slide">
+    <svg viewBox="0 0 36 36" aria-hidden="true"><polyline points="14,8 24,18 14,28"></polyline></svg>
+  </button>
+
+  <div class="hero-scroll" aria-hidden="true">
+    <span class="hero-scroll-line"></span><span>Scroll</span>
+  </div>
+</section>
+
+<script>
+  const hero = document.getElementById('hero');
+  if (hero) {
+    const track = document.getElementById('hsTrack')!;
+    const slides = Array.from(track.querySelectorAll<HTMLElement>('.hs-slide'));
+    const imgs = slides.map((s) => s.querySelector<HTMLImageElement>('.hs-img'));
+    const dots = Array.from(document.querySelectorAll<HTMLButtonElement>('.hs-dot'));
+    const counter = document.getElementById('hsCounter')!;
+    const progress = document.getElementById('hsProgress') as HTMLElement;
+    const btnPrev = document.getElementById('hsPrev')!;
+    const btnNext = document.getElementById('hsNext')!;
+
+    const total = slides.length;
+    const AUTO = 5500;
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const pad = (n: number) => String(n).padStart(2, '0');
+
+    let cur = 0;
+    let elapsed = 0;
+    let segStart = performance.now();
+    let raf = 0;
+    let paused = true;
+    let hover = false;
+    let offscreen = false;
+    let hidden = document.hidden;
+
+    if (reduce) progress.style.display = 'none';
+
+    function render() {
+      slides.forEach((s, k) => {
+        s.classList.toggle('hs-active', k === cur);
+        s.classList.toggle('hs-prev', false);
+      });
+      dots.forEach((d, k) => {
+        d.classList.toggle('active', k === cur);
+        d.setAttribute('aria-current', k === cur ? 'true' : 'false');
+      });
+      counter.textContent = `${pad(cur + 1)} / ${pad(total)}`;
+    }
+
+    function kenBurns() {
+      if (reduce) return;
+      const img = imgs[cur];
+      if (img) img.style.transform = `scale(${1 + (Math.min(elapsed, AUTO) / AUTO) * 0.05})`;
+    }
+
+    function tick(now: number) {
+      elapsed += now - segStart;
+      segStart = now;
+      if (!reduce) progress.style.width = `${Math.min(100, (elapsed / AUTO) * 100)}%`;
+      kenBurns();
+      if (elapsed >= AUTO) {
+        goTo((cur + 1) % total);
+        return;
+      }
+      raf = requestAnimationFrame(tick);
+    }
+
+    function stopLoop() {
+      cancelAnimationFrame(raf);
+    }
+    function runLoop() {
+      stopLoop();
+      segStart = performance.now();
+      raf = requestAnimationFrame(tick);
+    }
+    function syncPause() {
+      const shouldPause = hover || offscreen || hidden;
+      if (shouldPause === paused) return;
+      paused = shouldPause;
+      if (paused) stopLoop();
+      else runLoop();
+    }
+
+    function goTo(idx: number) {
+      const img = imgs[cur];
+      if (img) img.style.transform = ''; // reset outgoing Ken Burns
+      cur = (idx + total) % total;
+      elapsed = 0;
+      if (!reduce) progress.style.width = '0%';
+      render();
+      kenBurns();
+      if (!paused) runLoop();
+    }
+    const next = () => goTo(cur + 1);
+    const prev = () => goTo(cur - 1);
+
+    // controls — every path goes through goTo(), so autoplay always continues
+    btnNext.addEventListener('click', next);
+    btnPrev.addEventListener('click', prev);
+    dots.forEach((d) =>
+      d.addEventListener('click', () => goTo(Number(d.dataset.i))),
+    );
+
+    // hover pause / resume (progress + Ken Burns freeze, then continue)
+    hero.addEventListener('mouseenter', () => {
+      hover = true;
+      syncPause();
+    });
+    hero.addEventListener('mouseleave', () => {
+      hover = false;
+      syncPause();
+    });
+
+    // tab visibility
+    document.addEventListener('visibilitychange', () => {
+      hidden = document.hidden;
+      syncPause();
+    });
+
+    // keyboard — only when the hero is in view and the lightbox is closed
+    document.addEventListener('keydown', (e) => {
+      if (offscreen) return;
+      const lb = document.getElementById('lb');
+      if (lb?.classList.contains('open')) return;
+      if (e.key === 'ArrowRight') {
+        e.preventDefault();
+        next();
+      } else if (e.key === 'ArrowLeft') {
+        e.preventDefault();
+        prev();
+      }
+    });
+
+    // touch swipe
+    let tx: number | null = null;
+    hero.addEventListener('touchstart', (e) => (tx = e.touches[0].clientX), { passive: true });
+    hero.addEventListener('touchend', (e) => {
+      if (tx === null) return;
+      const dx = e.changedTouches[0].clientX - tx;
+      tx = null;
+      if (Math.abs(dx) < 40) return;
+      dx < 0 ? next() : prev();
+    });
+
+    // pause when the hero scrolls out of view (also scopes the keyboard)
+    if ('IntersectionObserver' in window) {
+      const io = new IntersectionObserver(
+        (entries) => {
+          offscreen = !entries[0].isIntersecting;
+          syncPause();
+        },
+        { threshold: 0.15 },
+      );
+      io.observe(hero);
+    }
+
+    // letterbox bars intro (motion only)
+    if (!reduce) {
+      hero.classList.add('bars-open');
+      window.setTimeout(() => {
+        hero.classList.remove('bars-open');
+        hero.classList.add('bars-close');
+      }, 1200);
+    }
+
+    // start
+    render();
+    paused = false;
+    runLoop();
+  }
+</script>

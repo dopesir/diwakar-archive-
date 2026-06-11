@@ -1,0 +1,67 @@
+---
+// Stats block. Numeric stats animate once when scrolled into view; under
+// reduced motion (or no JS) the final values render immediately.
+const stats = [
+  { count: 27, suffix: '+', label: 'Years in the Field' },
+  { count: 1308, suffix: '+', label: 'Getty Stock Photos' },
+  { count: 4, suffix: '', label: 'Continents Covered' },
+  { text: '∞', label: 'Untold Moments' },
+];
+const fmt = (n: number) => n.toLocaleString('en-US');
+---
+
+<div class="stats" id="statsBlock">
+  {
+    stats.map((s) => (
+      <div class="stat">
+        <div
+          class="stat-n"
+          data-count={s.count ?? undefined}
+          data-suffix={s.suffix ?? undefined}
+        >
+          {s.text ?? `${fmt(s.count!)}${s.suffix ?? ''}`}
+        </div>
+        <div class="stat-l">{s.label}</div>
+      </div>
+    ))
+  }
+</div>
+
+<script>
+  const block = document.getElementById('statsBlock');
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  if (block && !reduce) {
+    const nums = block.querySelectorAll<HTMLElement>('.stat-n[data-count]');
+
+    const animate = (el: HTMLElement) => {
+      const target = parseInt(el.dataset.count || '0', 10);
+      const suffix = el.dataset.suffix || '';
+      if (isNaN(target)) return;
+      const dur = 1600;
+      const start = performance.now();
+      const tick = (now: number) => {
+        const t = Math.min(1, (now - start) / dur);
+        const eased = t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+        const val = Math.round(eased * target);
+        el.textContent = (val >= 1000 ? val.toLocaleString('en-US') : String(val)) + suffix;
+        if (t < 1) requestAnimationFrame(tick);
+      };
+      requestAnimationFrame(tick);
+    };
+
+    const obs = new IntersectionObserver(
+      (entries) => {
+        for (const e of entries) {
+          if (e.isIntersecting) {
+            nums.forEach(animate);
+            obs.disconnect();
+            break;
+          }
+        }
+      },
+      { threshold: 0.3 },
+    );
+    obs.observe(block);
+  }
+</script>

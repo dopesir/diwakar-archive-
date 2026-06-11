@@ -1,0 +1,156 @@
+# Sveltia CMS configuration — see README §"Content management (CMS)".
+#
+# 1. Replace OWNER/REPO below with your GitHub repository (e.g. janedoe/diwakar-archive).
+# 2. Wire up GitHub auth (sveltia-cms-auth worker or an OAuth app) — README has steps.
+# 3. The editor then signs in at /admin/.
+
+backend:
+  name: github
+  repo: OWNER/REPO # ← CHANGE THIS
+  branch: main
+  # commit_messages are optional niceties:
+  commit_messages:
+    create: 'CMS: create {{collection}} "{{slug}}"'
+    update: 'CMS: update {{collection}} "{{slug}}"'
+    delete: 'CMS: delete {{collection}} "{{slug}}"'
+
+# Direct commits to `branch` — no editorial review queue. Simplest for one editor.
+publish_mode: simple
+
+# Uploaded photos are committed to src/assets/uploads. Each collection overrides
+# media_folder/public_folder with the RELATIVE path ../../assets/uploads so the
+# path written into entries resolves through Astro's image() pipeline — every
+# collection lives at src/content/<collection>/<file>, exactly two levels above
+# src/assets/. (Sveltia requires the GLOBAL public_folder to be absolute, so the
+# relative mapping must live on the collections, not here.)
+media_folder: src/assets/uploads
+
+collections:
+  # ---------------------------------------------------------------- HERO
+  - name: hero
+    label: Hero slides
+    label_singular: Hero slide
+    folder: src/content/hero
+    media_folder: ../../assets/uploads
+    public_folder: ../../assets/uploads
+    extension: yaml
+    format: yaml
+    create: true
+    identifier_field: title
+    summary: '{{order}} · {{location}} — {{title}}'
+    sortable_fields: [order, location, title]
+    fields:
+      - { name: order, label: 'Order (1–7)', widget: number, value_type: int, min: 1, max: 7 }
+      - { name: location, label: Location, widget: string }
+      - { name: title, label: Caption line, widget: text }
+      - { name: imageDesktop, label: Desktop image (landscape), widget: image }
+      - {
+          name: imageMobile,
+          label: Mobile image (portrait, optional),
+          widget: image,
+          required: false,
+        }
+      - {
+          name: position,
+          label: 'Focus point (CSS object-position, e.g. "center 40%")',
+          widget: string,
+          default: center,
+        }
+      - {
+          name: tone,
+          label: Scrim tone,
+          widget: select,
+          options: [dark, bright],
+          default: bright,
+        }
+
+  # ---------------------------------------------------------------- WORK
+  - name: work
+    label: Work
+    label_singular: Work item
+    folder: src/content/work
+    media_folder: ../../assets/uploads
+    public_folder: ../../assets/uploads
+    extension: md
+    format: frontmatter
+    create: true
+    slug: '{{slug}}'
+    identifier_field: title
+    summary: '{{year}} · {{title}}'
+    sortable_fields: [year, title]
+    fields:
+      - { name: title, label: Title, widget: string }
+      - { name: year, label: Year, widget: number, value_type: int, min: 1900, max: 2100 }
+      - { name: location, label: Location, widget: string, required: false }
+      - { name: image, label: Photograph, widget: image, required: false }
+      - { name: caption, label: Caption (lightbox / detail), widget: string, required: false }
+      - {
+          name: featured,
+          label: Feature on home (“Selected Frames”),
+          widget: boolean,
+          default: false,
+        }
+      - { name: draft, label: Hide from site, widget: boolean, default: false }
+      - { name: body, label: Description, widget: markdown }
+
+  # ---------------------------------------------------------------- STORIES
+  - name: stories
+    label: Stories
+    label_singular: Story
+    folder: src/content/stories
+    media_folder: ../../assets/uploads
+    public_folder: ../../assets/uploads
+    extension: md
+    format: frontmatter
+    create: true
+    slug: '{{slug}}'
+    identifier_field: title
+    summary: '{{date}} — {{title}}'
+    sortable_fields: [year, title]
+    fields:
+      - { name: title, label: Title, widget: string }
+      - { name: date, label: 'Date line (e.g. "Jaisalmer · 2019")', widget: string }
+      - { name: year, label: Year (for sorting), widget: number, value_type: int }
+      - { name: location, label: Location, widget: string }
+      - { name: image, label: Photograph (optional), widget: image, required: false }
+      - { name: quote, label: Pull quote (optional), widget: string, required: false }
+      - {
+          name: mood,
+          label: Mood tint (optional),
+          widget: select,
+          options: [drought, night, water],
+          required: false,
+        }
+      - { name: draft, label: Hide from site, widget: boolean, default: false }
+      - { name: body, label: Story, widget: markdown }
+
+  # ---------------------------------------------------------------- THOUGHTS
+  - name: thoughts
+    label: Thoughts
+    label_singular: Thought
+    folder: src/content/thoughts
+    media_folder: ../../assets/uploads
+    public_folder: ../../assets/uploads
+    extension: md
+    format: frontmatter
+    create: true
+    slug: '{{slug}}'
+    identifier_field: title
+    summary: '{{date}} — {{title}}'
+    sortable_fields: [year, title]
+    fields:
+      - { name: title, label: Title, widget: string }
+      - { name: date, label: 'Date line (e.g. "Kutch · 2019")', widget: string }
+      - { name: year, label: Year (for sorting), widget: number, value_type: int }
+      - { name: location, label: Location, widget: string }
+      - { name: image, label: Photograph (optional), widget: image, required: false }
+      - { name: quote, label: Pull quote (optional), widget: string, required: false }
+      - {
+          name: mood,
+          label: Mood tint (optional),
+          widget: select,
+          options: [drought, night, water],
+          required: false,
+        }
+      - { name: draft, label: Hide from site, widget: boolean, default: false }
+      - { name: body, label: Reflection, widget: markdown }
