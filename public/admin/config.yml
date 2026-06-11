@@ -14,6 +14,11 @@ backend:
     update: 'CMS: update {{collection}} "{{slug}}"'
     delete: 'CMS: delete {{collection}} "{{slug}}"'
 
+# Branding for the sign-in screen and header.
+logo_url: /favicon.svg
+site_url: https://diwakar-archive.pages.dev # ← update after deploy
+display_url: https://diwakar-archive.pages.dev
+
 # Direct commits to `branch` — no editorial review queue. Simplest for one editor.
 publish_mode: simple
 
@@ -30,6 +35,8 @@ collections:
   - name: hero
     label: Hero slides
     label_singular: Hero slide
+    description: The 7 rotating photographs on the home page. Order 1 shows first.
+    icon: imagesmode
     folder: src/content/hero
     media_folder: ../../assets/uploads
     public_folder: ../../assets/uploads
@@ -39,35 +46,51 @@ collections:
     identifier_field: title
     summary: '{{order}} · {{location}} — {{title}}'
     sortable_fields: [order, location, title]
+    editor:
+      preview: false
     fields:
-      - { name: order, label: 'Order (1–7)', widget: number, value_type: int, min: 1, max: 7 }
-      - { name: location, label: Location, widget: string }
-      - { name: title, label: Caption line, widget: text }
-      - { name: imageDesktop, label: Desktop image (landscape), widget: image }
-      - {
-          name: imageMobile,
-          label: Mobile image (portrait, optional),
-          widget: image,
-          required: false,
-        }
-      - {
-          name: position,
-          label: 'Focus point (CSS object-position, e.g. "center 40%")',
-          widget: string,
-          default: center,
-        }
-      - {
-          name: tone,
-          label: Scrim tone,
-          widget: select,
-          options: [dark, bright],
-          default: bright,
-        }
+      - name: order
+        label: 'Order (1–7)'
+        widget: number
+        value_type: int
+        min: 1
+        max: 7
+        hint: Position in the slideshow — 1 plays first.
+      - name: location
+        label: Location
+        widget: string
+        hint: 'Short place name shown above the caption, e.g. "Jaipur".'
+      - name: title
+        label: Caption line
+        widget: text
+        hint: One or two lines shown over the photo in italics.
+      - name: imageDesktop
+        label: Desktop image (landscape)
+        widget: image
+        hint: 'Wide/landscape photo, at least 2000px on the long edge.'
+      - name: imageMobile
+        label: Mobile image (portrait)
+        widget: image
+        required: false
+        hint: 'Optional tall/portrait crop for phones, at least 1200px high. If empty, the desktop photo is reused.'
+      - name: position
+        label: Focus point
+        widget: string
+        default: center
+        hint: 'Which part of the photo stays visible when cropped — e.g. "center", "center 30%" (towards the top), "left center".'
+      - name: tone
+        label: Scrim tone
+        widget: select
+        options: [dark, bright]
+        default: bright
+        hint: 'Pick "bright" if the photo is light (adds a darker overlay so text stays readable), "dark" if the photo is already dark.'
 
   # ---------------------------------------------------------------- WORK
   - name: work
     label: Work
     label_singular: Work item
+    description: The photography portfolio grid. Featured items also appear on the home page.
+    icon: photo_camera
     folder: src/content/work
     media_folder: ../../assets/uploads
     public_folder: ../../assets/uploads
@@ -78,25 +101,54 @@ collections:
     identifier_field: title
     summary: '{{year}} · {{title}}'
     sortable_fields: [year, title]
+    view_filters:
+      - { label: 'Featured on home', field: featured, pattern: true }
+      - { label: 'Hidden from site', field: draft, pattern: true }
     fields:
-      - { name: title, label: Title, widget: string }
-      - { name: year, label: Year, widget: number, value_type: int, min: 1900, max: 2100 }
-      - { name: location, label: Location, widget: string, required: false }
-      - { name: image, label: Photograph, widget: image, required: false }
-      - { name: caption, label: Caption (lightbox / detail), widget: string, required: false }
-      - {
-          name: featured,
-          label: Feature on home (“Selected Frames”),
-          widget: boolean,
-          default: false,
-        }
-      - { name: draft, label: Hide from site, widget: boolean, default: false }
-      - { name: body, label: Description, widget: markdown }
+      - name: title
+        label: Title
+        widget: string
+      - name: year
+        label: Year
+        widget: number
+        value_type: int
+        min: 1900
+        max: 2100
+      - name: location
+        label: Location
+        widget: string
+        required: false
+      - name: image
+        label: Photograph
+        widget: image
+        required: false
+        hint: 'At least 1600px on the long edge. Without a photo, the item shows as a text card.'
+      - name: caption
+        label: Caption
+        widget: string
+        required: false
+        hint: Shown under the photo on the detail page and in the full-screen viewer.
+      - name: featured
+        label: Feature on home page
+        widget: boolean
+        default: false
+        hint: 'On = also appears in "Selected Frames" on the home page.'
+      - name: draft
+        label: Hide from site
+        widget: boolean
+        default: false
+        hint: On = kept here but not published to the website.
+      - name: body
+        label: Description
+        widget: markdown
+        hint: The longer text on this item's own page.
 
   # ---------------------------------------------------------------- STORIES
   - name: stories
     label: Stories
     label_singular: Story
+    description: Long-form field stories — each gets its own page with photo and pull quote.
+    icon: auto_stories
     folder: src/content/stories
     media_folder: ../../assets/uploads
     public_folder: ../../assets/uploads
@@ -107,27 +159,55 @@ collections:
     identifier_field: title
     summary: '{{date}} — {{title}}'
     sortable_fields: [year, title]
+    view_filters:
+      - { label: 'Hidden from site', field: draft, pattern: true }
     fields:
-      - { name: title, label: Title, widget: string }
-      - { name: date, label: 'Date line (e.g. "Jaisalmer · 2019")', widget: string }
-      - { name: year, label: Year (for sorting), widget: number, value_type: int }
-      - { name: location, label: Location, widget: string }
-      - { name: image, label: Photograph (optional), widget: image, required: false }
-      - { name: quote, label: Pull quote (optional), widget: string, required: false }
-      - {
-          name: mood,
-          label: Mood tint (optional),
-          widget: select,
-          options: [drought, night, water],
-          required: false,
-        }
-      - { name: draft, label: Hide from site, widget: boolean, default: false }
-      - { name: body, label: Story, widget: markdown }
+      - name: title
+        label: Title
+        widget: string
+      - name: date
+        label: Date line
+        widget: string
+        hint: 'Shown as written, e.g. "Jaisalmer · 2019".'
+      - name: year
+        label: Year (for sorting)
+        widget: number
+        value_type: int
+        hint: Used only to order the list — newest first.
+      - name: location
+        label: Location
+        widget: string
+      - name: image
+        label: Photograph
+        widget: image
+        required: false
+        hint: At least 1600px on the long edge.
+      - name: quote
+        label: Pull quote
+        widget: string
+        required: false
+        hint: One striking sentence shown large in the middle of the story.
+      - name: mood
+        label: Mood tint
+        widget: select
+        options: [drought, night, water]
+        required: false
+        hint: Optional colour wash behind the story (warm / dark / cool).
+      - name: draft
+        label: Hide from site
+        widget: boolean
+        default: false
+        hint: On = kept here but not published to the website.
+      - name: body
+        label: Story
+        widget: markdown
 
   # ---------------------------------------------------------------- THOUGHTS
   - name: thoughts
     label: Thoughts
     label_singular: Thought
+    description: Short reflections and opinions — each gets its own page.
+    icon: lightbulb
     folder: src/content/thoughts
     media_folder: ../../assets/uploads
     public_folder: ../../assets/uploads
@@ -138,19 +218,45 @@ collections:
     identifier_field: title
     summary: '{{date}} — {{title}}'
     sortable_fields: [year, title]
+    view_filters:
+      - { label: 'Hidden from site', field: draft, pattern: true }
     fields:
-      - { name: title, label: Title, widget: string }
-      - { name: date, label: 'Date line (e.g. "Kutch · 2019")', widget: string }
-      - { name: year, label: Year (for sorting), widget: number, value_type: int }
-      - { name: location, label: Location, widget: string }
-      - { name: image, label: Photograph (optional), widget: image, required: false }
-      - { name: quote, label: Pull quote (optional), widget: string, required: false }
-      - {
-          name: mood,
-          label: Mood tint (optional),
-          widget: select,
-          options: [drought, night, water],
-          required: false,
-        }
-      - { name: draft, label: Hide from site, widget: boolean, default: false }
-      - { name: body, label: Reflection, widget: markdown }
+      - name: title
+        label: Title
+        widget: string
+      - name: date
+        label: Date line
+        widget: string
+        hint: 'Shown as written, e.g. "Kutch · 2019".'
+      - name: year
+        label: Year (for sorting)
+        widget: number
+        value_type: int
+        hint: Used only to order the list — newest first.
+      - name: location
+        label: Location
+        widget: string
+      - name: image
+        label: Photograph
+        widget: image
+        required: false
+        hint: At least 1600px on the long edge.
+      - name: quote
+        label: Pull quote
+        widget: string
+        required: false
+        hint: One striking sentence shown large within the piece.
+      - name: mood
+        label: Mood tint
+        widget: select
+        options: [drought, night, water]
+        required: false
+        hint: Optional colour wash behind the piece (warm / dark / cool).
+      - name: draft
+        label: Hide from site
+        widget: boolean
+        default: false
+        hint: On = kept here but not published to the website.
+      - name: body
+        label: Reflection
+        widget: markdown
