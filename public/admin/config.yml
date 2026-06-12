@@ -85,6 +85,53 @@ collections:
         default: bright
         hint: 'Pick "bright" if the photo is light (adds a darker overlay so text stays readable), "dark" if the photo is already dark.'
 
+  # ---------------------------------------------------------------- MAGAZINES
+  - name: magazines
+    label: Magazines (flipbooks)
+    label_singular: Magazine
+    description: The magazine covers on the About page. Each cover opens its flipbook reader in a new tab.
+    icon: menu_book
+    folder: src/content/magazines
+    media_folder: ../../assets/uploads
+    public_folder: ../../assets/uploads
+    extension: yaml
+    format: yaml
+    create: true
+    identifier_field: title
+    summary: '{{order}} · {{title}}'
+    sortable_fields: [order, title]
+    view_filters:
+      - { label: 'Hidden from site', field: draft, pattern: true }
+    editor:
+      preview: false
+    fields:
+      - name: title
+        label: Title
+        widget: string
+        hint: 'Full name, e.g. "Jeene Ka Andaaz — June 2026".'
+      - name: badge
+        label: Cover badge
+        widget: string
+        hint: 'Short label shown on the cover, e.g. "June 2026". Displays as "June 2026 · Flipbook".'
+      - name: cover
+        label: Cover image
+        widget: image
+        hint: 'Portrait cover scan, at least 600px wide.'
+      - name: link
+        label: Flipbook link
+        widget: string
+        hint: 'Where the cover opens. For magazines hosted on this site use "/flipbook/<name>/". For a NEW magazine: paste any full flipbook URL (https://...), or send the flipbook HTML file to your developer to host it here first.'
+      - name: order
+        label: Order
+        widget: number
+        value_type: int
+        hint: Position in the strip — 1 shows first.
+      - name: draft
+        label: Hide from site
+        widget: boolean
+        default: false
+        hint: On = kept here but not shown on the website.
+
   # ---------------------------------------------------------------- WORK
   - name: work
     label: Work

@@ -48,6 +48,21 @@ const narrativeSchema = ({ image }: SchemaContext) =>
     draft: z.boolean().default(false),
   });
 
+// Magazines shown in the About page press strip; `link` opens the flipbook
+// reader (site-relative /flipbook/<slug>/ or a full external URL).
+const magazines = defineCollection({
+  loader: glob({ pattern: '**/*.yaml', base: './src/content/magazines' }),
+  schema: ({ image }) =>
+    z.object({
+      title: z.string(), // "Jeene Ka Andaaz — June 2026"
+      badge: z.string(), // short label on the cover, e.g. "June 2026"
+      cover: image(),
+      link: z.string(), // flipbook reader URL
+      order: z.number().int(),
+      draft: z.boolean().default(false),
+    }),
+});
+
 const stories = defineCollection({
   loader: glob({ pattern: '**/*.md', base: './src/content/stories' }),
   schema: narrativeSchema,
@@ -58,4 +73,4 @@ const thoughts = defineCollection({
   schema: narrativeSchema,
 });
 
-export const collections = { hero, work, stories, thoughts };
+export const collections = { hero, work, stories, thoughts, magazines };
