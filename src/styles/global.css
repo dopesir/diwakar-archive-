@@ -27,6 +27,9 @@
 
 html {
   scroll-behavior: smooth;
+  /* Refined scrollbar — thin, ink-toned, replacing the chunky OS default. */
+  scrollbar-width: thin;
+  scrollbar-color: rgba(10, 8, 6, 0.32) transparent;
 }
 
 body {
@@ -36,6 +39,28 @@ body {
   font-weight: 500;
   line-height: 1.35;
   overflow-x: hidden;
+}
+
+/* WebKit/Blink (Chrome, Edge, Safari) — page scrollbar.
+   Scoped to the root so the bespoke .press-row strip keeps its own rule. */
+html::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+html::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+html::-webkit-scrollbar-thumb {
+  background-color: rgba(10, 8, 6, 0.26);
+  border-radius: 999px;
+  border: 3px solid transparent;
+  background-clip: content-box;
+}
+
+html::-webkit-scrollbar-thumb:hover {
+  background-color: var(--ochre);
 }
 
 img {
