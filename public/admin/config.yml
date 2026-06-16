@@ -266,6 +266,39 @@ collections:
                 required: false
                 hint: 'Optional sentence shown under the heading. Blank = hidden.'
 
+  # ---------------------------------------------------------------- REDIRECTS
+  - name: redirects
+    label: Redirects
+    label_singular: Redirect
+    description: Send an old or vanity URL somewhere else. The site's _redirects file is rebuilt from these on publish.
+    icon: alt_route
+    folder: src/content/redirects
+    extension: yaml
+    format: yaml
+    create: true
+    identifier_field: from
+    summary: '{{from}} → {{to}} ({{status}})'
+    sortable_fields: [from, status]
+    fields:
+      - name: from
+        label: From (old path)
+        widget: string
+        pattern: ['^/\S*$', 'Start with "/" and use no spaces, e.g. /old-page']
+        hint: 'The path on this site that should redirect, e.g. "/old-portfolio".'
+      - name: to
+        label: To (destination)
+        widget: string
+        pattern: ['^(/\S*|https?://\S+)$', 'A site path ("/…") or a full https:// URL']
+        hint: 'Where visitors land — a page on this site ("/work/") or a full https:// URL.'
+      - name: status
+        label: Type
+        widget: select
+        options:
+          - { label: 'Permanent (301)', value: 301 }
+          - { label: 'Temporary (302)', value: 302 }
+        default: 301
+        hint: 'Permanent for moved pages (best for SEO); temporary for short-term redirects.'
+
   # ---------------------------------------------------------------- HERO
   - name: hero
     label: Hero slides

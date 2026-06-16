@@ -107,6 +107,24 @@ const seoFields = ({ image }: SchemaContext) =>
     })
     .optional();
 
+/**
+ * Redirects (Tier 2A). Each entry becomes one line in the generated
+ * Cloudflare `_redirects` file (see src/pages/_redirects.ts). Seeded empty —
+ * this is a new domain — but kept so the client can add vanity/legacy URLs.
+ */
+const redirects = defineCollection({
+  loader: glob({ pattern: '**/*.yaml', base: './src/content/redirects' }),
+  schema: z.object({
+    from: z.string().regex(/^\/\S*$/, 'Must be a site path starting with "/" (no spaces).'),
+    to: z
+      .string()
+      .regex(/^(\/\S*|https?:\/\/\S+)$/, 'Must be a site path ("/…") or a full https:// URL.'),
+    status: z
+      .union([z.literal(301), z.literal(302)])
+      .default(301), // 301 permanent, 302 temporary
+  }),
+});
+
 const hero = defineCollection({
   loader: glob({ pattern: '**/*.yaml', base: './src/content/hero' }),
   schema: ({ image }) =>
@@ -175,4 +193,4 @@ const thoughts = defineCollection({
   schema: narrativeSchema,
 });
 
-export const collections = { settings, hero, work, stories, thoughts, magazines };
+export const collections = { settings, redirects, hero, work, stories, thoughts, magazines };

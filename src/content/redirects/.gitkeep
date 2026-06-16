@@ -1,0 +1,2 @@
+# Keeps the (intentionally empty) redirects folder in the repo so the content
+# loader has a base directory. Add redirect entries via the CMS.
