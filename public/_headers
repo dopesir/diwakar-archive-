@@ -26,3 +26,17 @@
   Permissions-Policy: camera=(), microphone=(), geolocation=()
   ! Content-Security-Policy
   Content-Security-Policy: default-src 'self'; script-src 'self' https://unpkg.com; style-src 'self' 'unsafe-inline' https://unpkg.com; img-src 'self' data: blob: https://*.githubusercontent.com https://*.gravatar.com; font-src 'self' data: https://unpkg.com; connect-src 'self' https://unpkg.com https://api.github.com https://www.githubstatus.com https://*.githubusercontent.com; frame-src 'self'; object-src 'none'; base-uri 'self'
+
+# The /flipbook/ readers are self-contained, third-party-generated magazine
+# viewers (one ~10 MB index.html each) that rely on an inline <script>, inline
+# event handlers, an inline <style>, and data:/blob: assets — none of which the
+# strict global policy allows. They load NO external origins, so this stays
+# same-origin + inline only. As with /admin/, DETACH the global CSP first ("!")
+# so Cloudflare doesn't comma-join and re-enforce script-src 'self'.
+/flipbook/*
+  X-Frame-Options: DENY
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin
+  Permissions-Policy: camera=(), microphone=(), geolocation=()
+  ! Content-Security-Policy
+  Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; media-src 'self' data: blob:; connect-src 'self' data: blob:; object-src 'none'; base-uri 'self'; frame-ancestors 'none'
