@@ -68,10 +68,10 @@ const pad = (n: number) => String(n).padStart(2, '0');
             <img
               class="hs-img"
               src={s.dJpg.src}
-              alt={s.d.title}
+              alt={s.d.alt ?? s.d.title}
               width={s.dJpg.attributes.width}
               height={s.dJpg.attributes.height}
-              style={`object-position:${s.d.position}`}
+              style={`--hs-pos:${s.d.position};${s.d.positionMobile ? `--hs-pos-mob:${s.d.positionMobile};` : ''}`}
               loading={i === 0 ? 'eager' : 'lazy'}
               fetchpriority={i === 0 ? 'high' : undefined}
               decoding="async"

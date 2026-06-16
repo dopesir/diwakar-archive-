@@ -410,10 +410,17 @@ html.has-announce .nav {
 }
 .hs-img {
   object-fit: cover;
-  object-position: center center;
+  /* Focus point is CMS-driven (2B): --hs-pos for desktop, --hs-pos-mob for the
+     mobile crop (falls back to the desktop value, then center). */
+  object-position: var(--hs-pos, center center);
   will-change: transform;
   filter: saturate(1) brightness(0.95);
   transform-origin: center center;
+}
+@media (max-width: 760px) {
+  .hs-img {
+    object-position: var(--hs-pos-mob, var(--hs-pos, center center));
+  }
 }
 .hs-grain {
   display: block;

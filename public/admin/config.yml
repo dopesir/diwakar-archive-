@@ -332,6 +332,11 @@ collections:
         label: Caption line
         widget: text
         hint: One or two lines shown over the photo in italics.
+      - name: alt
+        label: Alt text (accessibility)
+        widget: string
+        required: false
+        hint: 'Describes the photo for screen readers and search engines. If blank, the caption line is used.'
       - name: imageDesktop
         label: Desktop image (landscape)
         widget: image
@@ -342,10 +347,15 @@ collections:
         required: false
         hint: 'Optional tall/portrait crop for phones, at least 1200px high. If empty, the desktop photo is reused.'
       - name: position
-        label: Focus point
+        label: Focus point (desktop)
         widget: string
         default: center
         hint: 'Which part of the photo stays visible when cropped — e.g. "center", "center 30%" (towards the top), "left center".'
+      - name: positionMobile
+        label: Focus point (mobile)
+        widget: string
+        required: false
+        hint: 'Optional focus point for the phone crop, same format as above. If blank, the desktop focus point is used.'
       - name: tone
         label: Scrim tone
         widget: select
@@ -438,11 +448,31 @@ collections:
         widget: image
         required: false
         hint: 'At least 1600px on the long edge. Without a photo, the item shows as a text card.'
+      - name: alt
+        label: Alt text (accessibility)
+        widget: string
+        required: false
+        hint: 'Describes the photo for screen readers and search engines. If blank, the caption (then title) is used.'
       - name: caption
         label: Caption
         widget: string
         required: false
         hint: Shown under the photo on the detail page and in the full-screen viewer.
+      - name: focalPoint
+        label: Focus point (grid crop)
+        widget: select
+        required: false
+        options:
+          - { label: 'Center', value: center }
+          - { label: 'Top', value: top }
+          - { label: 'Bottom', value: bottom }
+          - { label: 'Left', value: left }
+          - { label: 'Right', value: right }
+          - { label: 'Top left', value: top-left }
+          - { label: 'Top right', value: top-right }
+          - { label: 'Bottom left', value: bottom-left }
+          - { label: 'Bottom right', value: bottom-right }
+        hint: 'Which part of the photo stays visible in the cropped grid thumbnail. Default is center.'
       - name: featured
         label: Feature on home page
         widget: boolean
@@ -524,6 +554,16 @@ collections:
         widget: image
         required: false
         hint: At least 1600px on the long edge.
+      - name: alt
+        label: Alt text (accessibility)
+        widget: string
+        required: false
+        hint: 'Describes the photo for screen readers and search engines. If blank, the caption (then title) is used.'
+      - name: caption
+        label: Caption
+        widget: string
+        required: false
+        hint: Shown under the photo in the full-screen viewer when this piece has one.
       - name: quote
         label: Pull quote
         widget: string
@@ -610,6 +650,16 @@ collections:
         widget: image
         required: false
         hint: At least 1600px on the long edge.
+      - name: alt
+        label: Alt text (accessibility)
+        widget: string
+        required: false
+        hint: 'Describes the photo for screen readers and search engines. If blank, the caption (then title) is used.'
+      - name: caption
+        label: Caption
+        widget: string
+        required: false
+        hint: Shown under the photo in the full-screen viewer when this piece has one.
       - name: quote
         label: Pull quote
         widget: string

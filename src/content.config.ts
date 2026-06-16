@@ -125,6 +125,24 @@ const redirects = defineCollection({
   }),
 });
 
+/**
+ * Media metadata (Tier 2B). `focalPoint` is a constrained select (design is at
+ * stake when cropping) mapped to a CSS object-position by src/lib/media.ts.
+ */
+const focalPoint = z
+  .enum([
+    'center',
+    'top',
+    'bottom',
+    'left',
+    'right',
+    'top-left',
+    'top-right',
+    'bottom-left',
+    'bottom-right',
+  ])
+  .optional();
+
 const hero = defineCollection({
   loader: glob({ pattern: '**/*.yaml', base: './src/content/hero' }),
   schema: ({ image }) =>
@@ -132,9 +150,11 @@ const hero = defineCollection({
       order: z.number().int().min(1).max(7), // 1..7
       location: z.string(), // "Jaipur"
       title: z.string(), // caption line
+      alt: z.string().optional(), // accessible description; falls back to title (2B)
       imageDesktop: image(), // landscape original
       imageMobile: image().optional(), // portrait original; fallback rule §7.3
       position: z.string().default('center'), // CSS object-position for desktop
+      positionMobile: z.string().optional(), // CSS object-position for the mobile crop (2B)
       tone: z.enum(['dark', 'bright']), // picks scrim strength
     }),
 });
@@ -147,7 +167,9 @@ const work = defineCollection({
       year: z.number().int(),
       location: z.string().optional(),
       image: image().optional(), // optional — placeholder cards exist
+      alt: z.string().optional(), // accessible description; falls back to caption/title (2B)
       caption: z.string().optional(), // lightbox / detail caption
+      focalPoint, // which part stays visible when the thumbnail crops (2B)
       featured: z.boolean().default(false), // shows in home "Selected Frames"
       draft: z.boolean().default(false),
       seo: seoFields({ image }),
@@ -162,6 +184,8 @@ const narrativeSchema = ({ image }: SchemaContext) =>
     year: z.number().int(), // for sorting
     location: z.string(),
     image: image().optional(),
+    alt: z.string().optional(), // accessible description; falls back to caption/title (2B)
+    caption: z.string().optional(), // lightbox caption when the piece has a photo (2B)
     quote: z.string().optional(), // pull quote
     mood: z.enum(['drought', 'night', 'water']).optional(),
     draft: z.boolean().default(false),

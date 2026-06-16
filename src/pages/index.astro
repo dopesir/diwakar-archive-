@@ -6,6 +6,7 @@ import HeroSlider from '../components/HeroSlider.astro';
 import StatCounter from '../components/StatCounter.astro';
 import Reveal from '../components/Reveal.astro';
 import { getSectionSettings } from '../lib/site';
+import { objectPosition } from '../lib/media';
 
 // Section copy + show/hide + order are CMS-managed (sections.yaml). The MARKUP
 // below stays in code; only text/visibility/order is data.
@@ -72,7 +73,8 @@ const description =
                   <div class="feat-frame">
                     <Picture
                       src={f.data.image!}
-                      alt={f.data.caption ?? f.data.title}
+                      alt={f.data.alt ?? f.data.caption ?? f.data.title}
+                      style={objectPosition(f.data.focalPoint) ? `object-position:${objectPosition(f.data.focalPoint)}` : undefined}
                       widths={[600, 1000, 1400]}
                       sizes="(max-width: 760px) 92vw, (max-width: 920px) 45vw, 600px"
                       formats={['avif', 'webp']}
