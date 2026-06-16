@@ -15,7 +15,7 @@ export async function getStaticPaths() {
 
 const { entry, index, prev, next } = Astro.props;
 const { Content } = await render(entry);
-const { title, year, location, image, caption } = entry.data;
+const { title, year, location, image, caption, seo } = entry.data;
 
 const descBase = caption ?? `${title}${location ? ' — ' + location : ''} · ${year}`;
 const description = `${descBase}. From the Purushottam Diwakar Legacy Archive.`;
@@ -28,6 +28,10 @@ const nextLink = next ? { href: `/work/${next.id}/`, title: next.data.title } : 
   description={description}
   ogImage={image}
   ogType="article"
+  seoTitle={seo?.seoTitle}
+  seoDescription={seo?.seoDescription}
+  shareImage={seo?.shareImage}
+  noindex={seo?.noindex}
 >
   <DetailLayout
     kind="Work"

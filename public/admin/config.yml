@@ -420,6 +420,33 @@ collections:
         widget: boolean
         default: false
         hint: On = kept here but not published to the website.
+      - name: seo
+        label: SEO (optional)
+        widget: object
+        collapsed: true
+        required: false
+        hint: "Optional overrides. Leave blank to use this item's normal title/photo and the site default."
+        fields:
+          - name: seoTitle
+            label: Search / social title
+            widget: string
+            required: false
+            hint: 'Overrides the browser-tab and social-share title for this page.'
+          - name: seoDescription
+            label: Search / social description
+            widget: text
+            required: false
+            hint: 'Overrides the search-result and social-share description. Aim for 150–160 characters.'
+          - name: shareImage
+            label: Social share image
+            widget: image
+            required: false
+            hint: 'Image used when this page is shared (ideally 1200×630). Falls back to the photo, then the site default.'
+          - name: noindex
+            label: Hide from search engines
+            widget: boolean
+            default: false
+            hint: 'On = ask search engines not to list this page. It still works via a direct link.'
       - name: body
         label: Description
         widget: markdown
@@ -480,6 +507,33 @@ collections:
         widget: boolean
         default: false
         hint: On = kept here but not published to the website.
+      - name: seo
+        label: SEO (optional)
+        widget: object
+        collapsed: true
+        required: false
+        hint: "Optional overrides. Leave blank to use this story's normal title and the site default share image."
+        fields:
+          - name: seoTitle
+            label: Search / social title
+            widget: string
+            required: false
+            hint: 'Overrides the browser-tab and social-share title for this page.'
+          - name: seoDescription
+            label: Search / social description
+            widget: text
+            required: false
+            hint: 'Overrides the search-result and social-share description. Aim for 150–160 characters.'
+          - name: shareImage
+            label: Social share image
+            widget: image
+            required: false
+            hint: 'Image used when this page is shared (ideally 1200×630). Falls back to the site default.'
+          - name: noindex
+            label: Hide from search engines
+            widget: boolean
+            default: false
+            hint: 'On = ask search engines not to list this page. It still works via a direct link.'
       - name: body
         label: Story
         widget: markdown
@@ -539,6 +593,33 @@ collections:
         widget: boolean
         default: false
         hint: On = kept here but not published to the website.
+      - name: seo
+        label: SEO (optional)
+        widget: object
+        collapsed: true
+        required: false
+        hint: "Optional overrides. Leave blank to use this piece's normal title and the site default share image."
+        fields:
+          - name: seoTitle
+            label: Search / social title
+            widget: string
+            required: false
+            hint: 'Overrides the browser-tab and social-share title for this page.'
+          - name: seoDescription
+            label: Search / social description
+            widget: text
+            required: false
+            hint: 'Overrides the search-result and social-share description. Aim for 150–160 characters.'
+          - name: shareImage
+            label: Social share image
+            widget: image
+            required: false
+            hint: 'Image used when this page is shared (ideally 1200×630). Falls back to the site default.'
+          - name: noindex
+            label: Hide from search engines
+            widget: boolean
+            default: false
+            hint: 'On = ask search engines not to list this page. It still works via a direct link.'
       - name: body
         label: Reflection
         widget: markdown

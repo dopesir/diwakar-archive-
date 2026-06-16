@@ -15,7 +15,7 @@ export async function getStaticPaths() {
 
 const { entry, index, prev, next } = Astro.props;
 const { Content } = await render(entry);
-const { title, year, location, quote } = entry.data;
+const { title, year, location, quote, seo } = entry.data;
 
 const raw = (entry.body ?? '').replace(/\s+/g, ' ').trim();
 const description = raw.length > 155 ? raw.slice(0, 155).replace(/\s+\S*$/, '') + '…' : raw;
@@ -23,7 +23,15 @@ const prevLink = prev ? { href: `/stories/${prev.id}/`, title: prev.data.title }
 const nextLink = next ? { href: `/stories/${next.id}/`, title: next.data.title } : null;
 ---
 
-<Base title={`${title} — Stories — P. Diwakar Archive`} description={description} ogType="article">
+<Base
+  title={`${title} — Stories — P. Diwakar Archive`}
+  description={description}
+  ogType="article"
+  seoTitle={seo?.seoTitle}
+  seoDescription={seo?.seoDescription}
+  shareImage={seo?.shareImage}
+  noindex={seo?.noindex}
+>
   <DetailLayout
     kind="Stories"
     baseHref="/stories/"

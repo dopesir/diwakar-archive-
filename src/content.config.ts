@@ -92,6 +92,21 @@ const settings = defineCollection({
     }),
 });
 
+/**
+ * Optional per-entry SEO override group (Tier 1C). Every field is optional and
+ * falls back through entry → Site Settings default → built-in fallback, resolved
+ * by the shared <SEO> component, so leaving it blank is always safe.
+ */
+const seoFields = ({ image }: SchemaContext) =>
+  z
+    .object({
+      seoTitle: z.string().optional(),
+      seoDescription: z.string().optional(),
+      shareImage: image().optional(),
+      noindex: z.boolean().default(false),
+    })
+    .optional();
+
 const hero = defineCollection({
   loader: glob({ pattern: '**/*.yaml', base: './src/content/hero' }),
   schema: ({ image }) =>
@@ -117,6 +132,7 @@ const work = defineCollection({
       caption: z.string().optional(), // lightbox / detail caption
       featured: z.boolean().default(false), // shows in home "Selected Frames"
       draft: z.boolean().default(false),
+      seo: seoFields({ image }),
     }),
 });
 
@@ -131,6 +147,7 @@ const narrativeSchema = ({ image }: SchemaContext) =>
     quote: z.string().optional(), // pull quote
     mood: z.enum(['drought', 'night', 'water']).optional(),
     draft: z.boolean().default(false),
+    seo: seoFields({ image }),
   });
 
 // Magazines shown in the About page press strip; `link` opens the flipbook
