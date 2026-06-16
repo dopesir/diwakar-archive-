@@ -16,4 +16,11 @@ export default defineConfig({
   build: {
     inlineStylesheets: 'auto',
   },
+  vite: {
+    build: {
+      // Force first-party scripts to external files so the strict CSP
+      // (script-src 'self', no 'unsafe-inline') never blocks them.
+      assetsInlineLimit: 0,
+    },
+  },
 });
