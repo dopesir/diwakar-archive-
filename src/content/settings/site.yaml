@@ -1,0 +1,24 @@
+seo:
+  defaultDescription: >-
+    Purushottam Diwakar — 27 years of photojournalism with the India Today
+    Group. A silent observer and visual archivist of the un-staged truth of
+    India.
+  ogSiteName: Purushottam Diwakar — Legacy Archive
+analytics:
+  scriptUrl: ''
+  siteId: ''
+contact:
+  email: ''
+  phone: ''
+social:
+  instagramUrl: https://www.instagram.com/lifeonimage/
+  instagramLabel: '@lifeonimage'
+  linkedinUrl: https://in.linkedin.com/in/purushottam-diwakar-1a9536271
+  linkedinLabel: LinkedIn
+  gettyUrl: https://www.gettyimages.com/photos/by-purushottam-diwakar
+  gettyLabel: Getty Images · 1,308+
+announcement:
+  enabled: false
+  text: ''
+  link: ''
+  linkLabel: ''

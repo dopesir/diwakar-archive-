@@ -7,6 +7,91 @@ import { glob } from 'astro/loaders';
  * entries are filtered out at build time — that is the CMS "unpublish" switch.
  */
 
+/**
+ * Global Site Settings + Section meta (CMS Tier 1). Two singleton YAML files
+ * live in src/content/settings/ — `site.yaml` (SEO defaults, analytics, contact,
+ * socials, announcement bar) and `sections.yaml` (per-section copy + show/hide +
+ * order). Every field is optional with a sensible fallback applied in code
+ * (src/lib/site.ts) so a missing value can never break the build or the design.
+ */
+const settings = defineCollection({
+  loader: glob({ pattern: '*.yaml', base: './src/content/settings' }),
+  schema: ({ image }) =>
+    z.object({
+      // ── site.yaml ────────────────────────────────────────────────
+      seo: z
+        .object({
+          defaultDescription: z.string().optional(),
+          ogSiteName: z.string().optional(),
+          shareImage: image().optional(),
+        })
+        .optional(),
+      analytics: z
+        .object({
+          scriptUrl: z.string().optional(), // external, bundled-friendly (never inline)
+          siteId: z.string().optional(),
+        })
+        .optional(),
+      contact: z
+        .object({
+          email: z.string().optional(),
+          phone: z.string().optional(),
+        })
+        .optional(),
+      social: z
+        .object({
+          instagramUrl: z.string().optional(),
+          instagramLabel: z.string().optional(),
+          linkedinUrl: z.string().optional(),
+          linkedinLabel: z.string().optional(),
+          gettyUrl: z.string().optional(),
+          gettyLabel: z.string().optional(),
+        })
+        .optional(),
+      announcement: z
+        .object({
+          enabled: z.boolean().default(false),
+          text: z.string().optional(),
+          link: z.string().optional(),
+          linkLabel: z.string().optional(),
+        })
+        .optional(),
+      // ── sections.yaml ────────────────────────────────────────────
+      hero: z.object({ visible: z.boolean().default(true) }).optional(),
+      intro: z
+        .object({
+          visible: z.boolean().default(true),
+          order: z.number().int().default(1),
+          eyebrow: z.string().optional(),
+          paragraphs: z.array(z.string()).optional(),
+          signature: z.string().optional(),
+        })
+        .optional(),
+      stats: z
+        .object({
+          visible: z.boolean().default(true),
+          items: z
+            .array(
+              z.object({
+                value: z.string(), // numeric strings animate; symbols (e.g. ∞) render as-is
+                suffix: z.string().optional(),
+                label: z.string(),
+              }),
+            )
+            .optional(),
+        })
+        .optional(),
+      featured: z
+        .object({
+          visible: z.boolean().default(true),
+          order: z.number().int().default(2),
+          heading: z.string().optional(),
+          intro: z.string().optional(),
+        })
+        .optional(),
+    }),
+});
+
 const hero = defineCollection({
   loader: glob({ pattern: '**/*.yaml', base: './src/content/hero' }),
   schema: ({ image }) =>
@@ -73,4 +158,4 @@ const thoughts = defineCollection({
   schema: narrativeSchema,
 });
 
-export const collections = { hero, work, stories, thoughts, magazines };
+export const collections = { settings, hero, work, stories, thoughts, magazines };

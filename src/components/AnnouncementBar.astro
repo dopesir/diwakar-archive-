@@ -1,0 +1,57 @@
+---
+// Thin, dismissible announcement band driven by Site Settings (CMS).
+// It is its OWN component — deliberately NOT part of the locked header/nav.
+// Renders nothing unless the client switches it on, so the default site is
+// byte-identical to before. Dismissal is remembered for the session
+// (sessionStorage) via a bundled (never inline) script; reduced-motion aware.
+import { getSiteSettings } from '../lib/site';
+
+const { announcement } = await getSiteSettings();
+const show = announcement.enabled && announcement.text !== '';
+const hasLink = announcement.link !== '';
+---
+
+{
+  show && (
+    <aside class="announce-bar" id="announce-bar" aria-label="Site announcement">
+      <p class="announce-text">
+        <span>{announcement.text}</span>
+        {hasLink && (
+          <a class="announce-link" href={announcement.link}>
+            {announcement.linkLabel !== '' ? announcement.linkLabel : 'Learn more'}
+          </a>
+        )}
+      </p>
+      <button class="announce-close" id="announce-close" type="button" aria-label="Dismiss announcement">
+        &times;
+      </button>
+    </aside>
+  )
+}
+
+{
+  show && (
+    <script>
+      const KEY = 'announce-dismissed';
+      const bar = document.getElementById('announce-bar');
+      const root = document.documentElement;
+
+      if (bar) {
+        // If dismissed earlier this session, hide immediately + release the nav offset.
+        if (sessionStorage.getItem(KEY) === '1') {
+          bar.hidden = true;
+          root.classList.remove('has-announce');
+        }
+        document.getElementById('announce-close')?.addEventListener('click', () => {
+          bar.hidden = true;
+          root.classList.remove('has-announce');
+          try {
+            sessionStorage.setItem(KEY, '1');
+          } catch {
+            /* private mode — fine to ignore */
+          }
+        });
+      }
+    </script>
+  )
+}

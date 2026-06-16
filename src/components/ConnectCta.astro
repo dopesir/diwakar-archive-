@@ -3,6 +3,9 @@
 // last section of every page (Base.astro skips it on /connect/, which carries
 // the full-page version of the same content).
 import SocialLinks from './SocialLinks.astro';
+import { getSiteSettings } from '../lib/site';
+
+const { contact } = await getSiteSettings();
 ---
 
 <section class="connect-cta" aria-label="Connect and collaborate">
@@ -13,6 +16,15 @@ import SocialLinks from './SocialLinks.astro';
     images available on Getty Images for immediate licensing.
   </p>
   <SocialLinks />
+  {
+    (contact.email || contact.phone) && (
+      <p class="connect-contact">
+        {contact.email && <a href={`mailto:${contact.email}`}>{contact.email}</a>}
+        {contact.email && contact.phone && <span class="sep"> · </span>}
+        {contact.phone && <a href={`tel:${contact.phone.replace(/\s+/g, '')}`}>{contact.phone}</a>}
+      </p>
+    )
+  }
   <p class="soc-note">Representation by invitation only · India Today Group</p>
 </section>
 

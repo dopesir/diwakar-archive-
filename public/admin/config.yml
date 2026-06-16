@@ -31,6 +31,134 @@ publish_mode: simple
 media_folder: src/assets/uploads
 
 collections:
+  # ---------------------------------------------------------------- SITE SETTINGS
+  - name: settings
+    label: Site settings
+    description: Global values used across the site. The header and footer are fixed in code and not edited here.
+    icon: settings
+    files:
+      # ---------------------------------------------------------- SITE (global)
+      - name: site
+        label: Site & SEO
+        file: src/content/settings/site.yaml
+        media_folder: ../../assets/uploads
+        public_folder: ../../assets/uploads
+        icon: public
+        description: SEO defaults, analytics, contact details, social links and the announcement bar.
+        fields:
+          - name: seo
+            label: SEO defaults
+            widget: object
+            collapsed: false
+            hint: Used as the fallback for any page that doesn't set its own SEO.
+            fields:
+              - name: defaultDescription
+                label: Default meta description
+                widget: text
+                required: false
+                hint: 'The site-wide description used when a page has none. Aim for 150–160 characters.'
+              - name: ogSiteName
+                label: Social site name
+                widget: string
+                required: false
+                hint: 'Shown as the site name when a page is shared on social media.'
+              - name: shareImage
+                label: Default share image
+                widget: image
+                required: false
+                hint: 'Fallback image shown when a page without its own image is shared (ideally 1200×630).'
+          - name: analytics
+            label: Analytics (optional)
+            widget: object
+            collapsed: true
+            hint: 'Leave blank for no analytics. Adding a provider also needs your developer to allow its address in the security headers.'
+            fields:
+              - name: scriptUrl
+                label: Analytics script URL
+                widget: string
+                required: false
+                hint: 'Full https:// URL of a privacy-friendly analytics script (e.g. Plausible/Umami). Blank = no analytics.'
+              - name: siteId
+                label: Site / domain ID
+                widget: string
+                required: false
+                hint: 'The site identifier your analytics provider asks for (often your domain). Optional.'
+          - name: contact
+            label: Contact details
+            widget: object
+            collapsed: true
+            hint: 'Shown in the Connect section only — never in the footer. Leave blank to hide.'
+            fields:
+              - name: email
+                label: Contact email
+                widget: string
+                required: false
+                pattern: ['^$|^[^@\s]+@[^@\s]+\.[^@\s]+$', 'Enter a valid email address or leave blank.']
+                hint: 'Shown as a mailto link on the Connect page. Blank = hidden.'
+              - name: phone
+                label: Contact phone
+                widget: string
+                required: false
+                hint: 'Optional phone number shown beside the email. Blank = hidden.'
+          - name: social
+            label: Social links
+            widget: object
+            collapsed: true
+            hint: 'Used by the Connect page and the pre-footer call-to-action. (The footer keeps its own links in code.)'
+            fields:
+              - name: instagramUrl
+                label: Instagram URL
+                widget: string
+                required: false
+              - name: instagramLabel
+                label: Instagram label
+                widget: string
+                required: false
+                hint: 'Text on the button, e.g. "@lifeonimage".'
+              - name: linkedinUrl
+                label: LinkedIn URL
+                widget: string
+                required: false
+              - name: linkedinLabel
+                label: LinkedIn label
+                widget: string
+                required: false
+              - name: gettyUrl
+                label: Getty Images URL
+                widget: string
+                required: false
+              - name: gettyLabel
+                label: Getty label
+                widget: string
+                required: false
+                hint: 'Text on the button, e.g. "Getty Images · 1,308+".'
+          - name: announcement
+            label: Announcement bar
+            widget: object
+            collapsed: true
+            hint: 'A thin band across the very top of every page. It sits above the menu and visitors can dismiss it.'
+            fields:
+              - name: enabled
+                label: Show announcement bar
+                widget: boolean
+                default: false
+                hint: 'Off = no bar at all (the default).'
+              - name: text
+                label: Message
+                widget: string
+                required: false
+                hint: 'The text shown in the bar. Required for the bar to appear.'
+              - name: link
+                label: Link (optional)
+                widget: string
+                required: false
+                hint: 'Where the bar links to, e.g. "/connect/" or a full https:// URL. Blank = no link.'
+              - name: linkLabel
+                label: Link label (optional)
+                widget: string
+                required: false
+                hint: 'Text for the link, e.g. "Learn more". Defaults to "Learn more" if a link is set.'
+
   # ---------------------------------------------------------------- HERO
   - name: hero
     label: Hero slides

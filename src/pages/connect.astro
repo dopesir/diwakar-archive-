@@ -2,7 +2,9 @@
 import Base from '../layouts/Base.astro';
 import Reveal from '../components/Reveal.astro';
 import SocialLinks from '../components/SocialLinks.astro';
+import { getSiteSettings } from '../lib/site';
 
+const { contact } = await getSiteSettings();
 const description =
   'Connect & collaborate — exhibitions, editorial licensing, collaborations and limited-edition prints. Over 1,300 images on Getty Images for immediate licensing.';
 ---
@@ -19,6 +21,18 @@ const description =
       </p>
 
       <SocialLinks />
+
+      {
+        (contact.email || contact.phone) && (
+          <p class="connect-contact">
+            {contact.email && <a href={`mailto:${contact.email}`}>{contact.email}</a>}
+            {contact.email && contact.phone && <span class="sep"> · </span>}
+            {contact.phone && (
+              <a href={`tel:${contact.phone.replace(/\s+/g, '')}`}>{contact.phone}</a>
+            )}
+          </p>
+        )
+      }
 
       <p class="soc-note">Representation by invitation only · India Today Group</p>
     </div>
