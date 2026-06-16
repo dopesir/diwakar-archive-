@@ -864,6 +864,14 @@ html.has-announce .nav {
   color: var(--ochre);
   margin-bottom: 2rem;
 }
+/* Optional CMS intro line under the section heading — only when set. */
+.feat-intro {
+  font-size: 0.95rem;
+  line-height: 1.7;
+  color: var(--smoke);
+  max-width: 52ch;
+  margin: -1.2rem 0 2rem;
+}
 .feat-grid {
   display: grid;
   grid-template-columns: 2fr 1fr 1fr;

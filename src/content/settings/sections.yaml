@@ -1,0 +1,37 @@
+hero:
+  visible: true
+intro:
+  visible: true
+  order: 1
+  eyebrow: The Eye Behind the Frame
+  paragraphs:
+    - >-
+      Purushottam Diwakar has been a quiet witness to the Indian subcontinent
+      for over 27 years. Senior Photojournalist with the India Today Group since
+      1998, his work appears on the magazine’s cover and in international
+      publications worldwide.
+    - >-
+      His work spans drought chronicles, tribal ceremonies, political upheaval,
+      and the quiet dignities of daily desert life. He has photographed four
+      continents and contributed over 1,300 images to Getty Images.
+  signature: Witness · Humanist · Archivist
+stats:
+  visible: true
+  items:
+    - value: '27'
+      suffix: +
+      label: Years in the Field
+    - value: '1308'
+      suffix: +
+      label: Getty Stock Photos
+    - value: '4'
+      suffix: ''
+      label: Continents Covered
+    - value: ∞
+      suffix: ''
+      label: Untold Moments
+featured:
+  visible: true
+  order: 2
+  heading: Selected Frames
+  intro: ''

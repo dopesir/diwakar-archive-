@@ -159,6 +159,113 @@ collections:
                 required: false
                 hint: 'Text for the link, e.g. "Learn more". Defaults to "Learn more" if a link is set.'
 
+      # ---------------------------------------------------------- HOME SECTIONS
+      - name: sections
+        label: Home page sections
+        file: src/content/settings/sections.yaml
+        media_folder: ../../assets/uploads
+        public_folder: ../../assets/uploads
+        icon: dashboard
+        description: Copy, show/hide and order for the home page sections. The page layout itself stays fixed in code.
+        fields:
+          - name: hero
+            label: Hero slideshow
+            widget: object
+            collapsed: false
+            hint: The big rotating photographs at the top. Edit the slides themselves under "Hero slides".
+            fields:
+              - name: visible
+                label: Show hero slideshow
+                widget: boolean
+                default: true
+                hint: 'Off = hide the whole slideshow on the home page.'
+          - name: intro
+            label: Introduction
+            widget: object
+            collapsed: false
+            hint: The statement block near the top of the home page.
+            fields:
+              - name: visible
+                label: Show this section
+                widget: boolean
+                default: true
+              - name: order
+                label: Order
+                widget: number
+                value_type: int
+                default: 1
+                hint: 'Lower numbers appear first. Controls whether Introduction or Selected Frames comes first.'
+              - name: eyebrow
+                label: Eyebrow (small heading)
+                widget: string
+                required: false
+                hint: 'Small label above the text, e.g. "The Eye Behind the Frame".'
+              - name: paragraphs
+                label: Paragraphs
+                widget: list
+                field: { name: text, label: Paragraph, widget: text }
+                hint: 'One entry per paragraph. Plain text only.'
+              - name: signature
+                label: Signature line
+                widget: string
+                required: false
+                hint: 'The closing line, e.g. "Witness · Humanist · Archivist".'
+          - name: stats
+            label: Statistics
+            widget: object
+            collapsed: true
+            hint: The four big figures beside the introduction.
+            fields:
+              - name: visible
+                label: Show statistics
+                widget: boolean
+                default: true
+              - name: items
+                label: Figures
+                widget: list
+                summary: '{{fields.value}}{{fields.suffix}} — {{fields.label}}'
+                hint: 'Each figure counts up when scrolled into view. Use a plain number to animate (e.g. "1308"); symbols like "∞" show as-is.'
+                fields:
+                  - name: value
+                    label: Figure
+                    widget: string
+                    hint: 'e.g. "27", "1308", or "∞".'
+                  - name: suffix
+                    label: Suffix
+                    widget: string
+                    required: false
+                    hint: 'Optional symbol after the number, e.g. "+".'
+                  - name: label
+                    label: Label
+                    widget: string
+                    hint: 'e.g. "Years in the Field".'
+          - name: featured
+            label: Selected Frames
+            widget: object
+            collapsed: true
+            hint: The featured-work grid. Choose which photos appear by toggling "Feature on home page" on each Work item.
+            fields:
+              - name: visible
+                label: Show this section
+                widget: boolean
+                default: true
+              - name: order
+                label: Order
+                widget: number
+                value_type: int
+                default: 2
+                hint: 'Lower numbers appear first.'
+              - name: heading
+                label: Heading
+                widget: string
+                required: false
+                hint: 'e.g. "Selected Frames".'
+              - name: intro
+                label: Intro text (optional)
+                widget: text
+                required: false
+                hint: 'Optional sentence shown under the heading. Blank = hidden.'
+
   # ---------------------------------------------------------------- HERO
   - name: hero
     label: Hero slides

@@ -1,25 +1,35 @@
 ---
 // Stats block. Numeric stats animate once when scrolled into view; under
-// reduced motion (or no JS) the final values render immediately.
-const stats = [
-  { count: 27, suffix: '+', label: 'Years in the Field' },
-  { count: 1308, suffix: '+', label: 'Getty Stock Photos' },
-  { count: 4, suffix: '', label: 'Continents Covered' },
-  { text: '∞', label: 'Untold Moments' },
-];
+// reduced motion (or no JS) the final values render immediately. The figures
+// and labels are CMS-editable (sections.yaml → stats.items); a `value` that
+// parses to a number animates, anything else (e.g. "∞") renders verbatim.
+import type { StatItem } from '../lib/site';
+
+interface Props {
+  items: StatItem[];
+}
+const { items } = Astro.props;
 const fmt = (n: number) => n.toLocaleString('en-US');
+
+const rows = items.map((s) => {
+  const n = parseInt(s.value.replace(/,/g, ''), 10);
+  const isNumeric = !Number.isNaN(n) && String(n) === s.value.replace(/[,\s]/g, '');
+  const suffix = s.suffix ?? '';
+  return {
+    label: s.label,
+    suffix,
+    count: isNumeric ? n : undefined,
+    display: isNumeric ? `${fmt(n)}${suffix}` : s.value,
+  };
+});
 ---
 
 <div class="stats" id="statsBlock">
   {
-    stats.map((s) => (
+    rows.map((s) => (
       <div class="stat">
-        <div
-          class="stat-n"
-          data-count={s.count ?? undefined}
-          data-suffix={s.suffix ?? undefined}
-        >
-          {s.text ?? `${fmt(s.count!)}${s.suffix ?? ''}`}
+        <div class="stat-n" data-count={s.count ?? undefined} data-suffix={s.suffix || undefined}>
+          {s.display}
         </div>
         <div class="stat-l">{s.label}</div>
       </div>

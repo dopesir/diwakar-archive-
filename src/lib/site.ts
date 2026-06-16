@@ -72,3 +72,79 @@ export async function getSiteSettings(): Promise<SiteSettings> {
     },
   };
 }
+
+/**
+ * Home-page section meta (sections.yaml): editable copy + show/hide + order.
+ * Markup stays in code (index.astro); only copy/visibility/order is data here.
+ */
+export interface StatItem {
+  value: string;
+  suffix: string;
+  label: string;
+}
+
+export interface SectionSettings {
+  hero: { visible: boolean };
+  intro: {
+    visible: boolean;
+    order: number;
+    eyebrow: string;
+    paragraphs: string[];
+    signature: string;
+  };
+  stats: { visible: boolean; items: StatItem[] };
+  featured: { visible: boolean; order: number; heading: string; intro: string };
+}
+
+const DEFAULT_INTRO_PARAGRAPHS = [
+  'Purushottam Diwakar has been a quiet witness to the Indian subcontinent for over 27 years. ' +
+    'Senior Photojournalist with the India Today Group since 1998, his work appears on the ' +
+    'magazine’s cover and in international publications worldwide.',
+  'His work spans drought chronicles, tribal ceremonies, political upheaval, and the quiet ' +
+    'dignities of daily desert life. He has photographed four continents and contributed over ' +
+    '1,300 images to Getty Images.',
+];
+const DEFAULT_STATS: StatItem[] = [
+  { value: '27', suffix: '+', label: 'Years in the Field' },
+  { value: '1308', suffix: '+', label: 'Getty Stock Photos' },
+  { value: '4', suffix: '', label: 'Continents Covered' },
+  { value: '∞', suffix: '', label: 'Untold Moments' },
+];
+
+const bool = (v: unknown, fallback = true): boolean => (typeof v === 'boolean' ? v : fallback);
+const num = (v: unknown, fallback: number): number => (typeof v === 'number' ? v : fallback);
+
+export async function getSectionSettings(): Promise<SectionSettings> {
+  const entry = await getEntry('settings', 'sections');
+  const d = (entry?.data ?? {}) as Record<string, any>;
+
+  const introParas = Array.isArray(d.intro?.paragraphs)
+    ? d.intro.paragraphs.filter((p: unknown) => typeof p === 'string' && p.trim() !== '')
+    : [];
+  const statItems = Array.isArray(d.stats?.items)
+    ? d.stats.items
+        .filter((s: any) => s && typeof s.value === 'string' && typeof s.label === 'string')
+        .map((s: any) => ({ value: s.value, suffix: str(s.suffix), label: s.label }))
+    : [];
+
+  return {
+    hero: { visible: bool(d.hero?.visible) },
+    intro: {
+      visible: bool(d.intro?.visible),
+      order: num(d.intro?.order, 1),
+      eyebrow: str(d.intro?.eyebrow, 'The Eye Behind the Frame'),
+      paragraphs: introParas.length ? introParas : DEFAULT_INTRO_PARAGRAPHS,
+      signature: str(d.intro?.signature, 'Witness · Humanist · Archivist'),
+    },
+    stats: {
+      visible: bool(d.stats?.visible),
+      items: statItems.length ? statItems : DEFAULT_STATS,
+    },
+    featured: {
+      visible: bool(d.featured?.visible),
+      order: num(d.featured?.order, 2),
+      heading: str(d.featured?.heading, 'Selected Frames'),
+      intro: str(d.featured?.intro),
+    },
+  };
+}

@@ -5,6 +5,17 @@ import Base from '../layouts/Base.astro';
 import HeroSlider from '../components/HeroSlider.astro';
 import StatCounter from '../components/StatCounter.astro';
 import Reveal from '../components/Reveal.astro';
+import { getSectionSettings } from '../lib/site';
+
+// Section copy + show/hide + order are CMS-managed (sections.yaml). The MARKUP
+// below stays in code; only text/visibility/order is data.
+const sections = await getSectionSettings();
+const orderedSections = [
+  { key: 'intro' as const, order: sections.intro.order, visible: sections.intro.visible },
+  { key: 'featured' as const, order: sections.featured.order, visible: sections.featured.visible },
+]
+  .filter((s) => s.visible)
+  .sort((a, b) => a.order - b.order);
 
 const ordered = (await getCollection('hero')).sort((a, b) => a.data.order - b.data.order);
 
@@ -35,60 +46,58 @@ const description =
     <link rel="preload" as="image" href={s1desk.src} type="image/avif" media="(min-width: 761px)" />
   </Fragment>
 
-  <HeroSlider slides={ordered} />
+  {sections.hero.visible && <HeroSlider slides={ordered} />}
 
   <div class="home-body">
-    <section class="intro-grid fu" aria-label="Introduction">
-      <div class="intro-text">
-        <p class="eyebrow">The Eye Behind the Frame</p>
-        <p>
-          Purushottam Diwakar has been a quiet witness to the Indian subcontinent for over 27
-          years. Senior Photojournalist with the India Today Group since 1998, his work appears on
-          the magazine’s cover and in international publications worldwide.
-        </p>
-        <p>
-          His work spans drought chronicles, tribal ceremonies, political upheaval, and the quiet
-          dignities of daily desert life. He has photographed four continents and contributed over
-          1,300 images to Getty Images.
-        </p>
-        <p class="sig">Witness · Humanist · Archivist</p>
-      </div>
-      <StatCounter />
-    </section>
-
-    <section class="featured fu" aria-label="Selected frames">
-      <h2 class="feat-label">Selected Frames</h2>
-      <div class="feat-grid">
-        {
-          featured.map((f) => (
-            <a class="feat-item" href={`/work/${f.id}/`}>
-              <div class="feat-frame">
-                <Picture
-                  src={f.data.image!}
-                  alt={f.data.caption ?? f.data.title}
-                  widths={[600, 1000, 1400]}
-                  sizes="(max-width: 760px) 92vw, (max-width: 920px) 45vw, 600px"
-                  formats={['avif', 'webp']}
-                  fallbackFormat="jpg"
-                  quality={72}
-                  loading="lazy"
-                  decoding="async"
-                />
-                <div class="feat-grain" />
-                <div class="feat-veil" />
-                <div class="feat-expand">
-                  <svg viewBox="0 0 18 18" aria-hidden="true">
-                    <path d="M2 7V2h5M11 2h5v5M16 11v5h-5M7 16H2v-5" />
-                  </svg>
-                </div>
-              </div>
-              <div class="feat-cap">{f.data.title}</div>
-              <div class="feat-yr">{f.data.year}</div>
-            </a>
-          ))
-        }
-      </div>
-    </section>
+    {
+      orderedSections.map((s) =>
+        s.key === 'intro' ? (
+          <section class="intro-grid fu" aria-label="Introduction">
+            <div class="intro-text">
+              {sections.intro.eyebrow && <p class="eyebrow">{sections.intro.eyebrow}</p>}
+              {sections.intro.paragraphs.map((p) => (
+                <p>{p}</p>
+              ))}
+              {sections.intro.signature && <p class="sig">{sections.intro.signature}</p>}
+            </div>
+            {sections.stats.visible && <StatCounter items={sections.stats.items} />}
+          </section>
+        ) : (
+          <section class="featured fu" aria-label="Selected frames">
+            <h2 class="feat-label">{sections.featured.heading}</h2>
+            {sections.featured.intro && <p class="feat-intro">{sections.featured.intro}</p>}
+            <div class="feat-grid">
+              {featured.map((f) => (
+                <a class="feat-item" href={`/work/${f.id}/`}>
+                  <div class="feat-frame">
+                    <Picture
+                      src={f.data.image!}
+                      alt={f.data.caption ?? f.data.title}
+                      widths={[600, 1000, 1400]}
+                      sizes="(max-width: 760px) 92vw, (max-width: 920px) 45vw, 600px"
+                      formats={['avif', 'webp']}
+                      fallbackFormat="jpg"
+                      quality={72}
+                      loading="lazy"
+                      decoding="async"
+                    />
+                    <div class="feat-grain" />
+                    <div class="feat-veil" />
+                    <div class="feat-expand">
+                      <svg viewBox="0 0 18 18" aria-hidden="true">
+                        <path d="M2 7V2h5M11 2h5v5M16 11v5h-5M7 16H2v-5" />
+                      </svg>
+                    </div>
+                  </div>
+                  <div class="feat-cap">{f.data.title}</div>
+                  <div class="feat-yr">{f.data.year}</div>
+                </a>
+              ))}
+            </div>
+          </section>
+        ),
+      )
+    }
   </div>
 
   <canvas id="dust-c" aria-hidden="true"></canvas>
