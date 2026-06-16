@@ -3,8 +3,9 @@ import { getCollection } from 'astro:content';
 import Base from '../../layouts/Base.astro';
 import WorkCard from '../../components/WorkCard.astro';
 import Reveal from '../../components/Reveal.astro';
+import { isPublished } from '../../lib/content';
 
-const work = (await getCollection('work', ({ data }) => !data.draft)).sort(
+const work = (await getCollection('work', ({ data }) => isPublished(data))).sort(
   (a, b) => b.data.year - a.data.year || a.data.title.localeCompare(b.data.title),
 );
 const description =

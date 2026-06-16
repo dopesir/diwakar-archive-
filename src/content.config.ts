@@ -109,7 +109,7 @@ const seoFields = ({ image }: SchemaContext) =>
 
 /**
  * Redirects (Tier 2A). Each entry becomes one line in the generated
- * Cloudflare `_redirects` file (see src/pages/_redirects.ts). Seeded empty —
+ * Cloudflare `_redirects` file (see src/pages/cf-redirects.txt.ts). Seeded empty —
  * this is a new domain — but kept so the client can add vanity/legacy URLs.
  */
 const redirects = defineCollection({
@@ -143,6 +143,16 @@ const focalPoint = z
   ])
   .optional();
 
+/**
+ * Scheduled-publish date (Tier 2C). Accepts both an ISO string and a YAML-parsed
+ * Date (an unquoted ISO timestamp in frontmatter becomes a Date), and treats a
+ * blank value as unset. A future value hides the entry until the next build.
+ */
+const publishDate = z.preprocess(
+  (v) => (v === '' || v === null ? undefined : v),
+  z.coerce.date().optional(),
+);
+
 const hero = defineCollection({
   loader: glob({ pattern: '**/*.yaml', base: './src/content/hero' }),
   schema: ({ image }) =>
@@ -172,6 +182,7 @@ const work = defineCollection({
       focalPoint, // which part stays visible when the thumbnail crops (2B)
       featured: z.boolean().default(false), // shows in home "Selected Frames"
       draft: z.boolean().default(false),
+      publishDate, // future = hidden until next build (2C)
       seo: seoFields({ image }),
     }),
 });
@@ -189,6 +200,7 @@ const narrativeSchema = ({ image }: SchemaContext) =>
     quote: z.string().optional(), // pull quote
     mood: z.enum(['drought', 'night', 'water']).optional(),
     draft: z.boolean().default(false),
+    publishDate, // future = hidden until next build (2C)
     seo: seoFields({ image }),
   });
 
@@ -204,6 +216,7 @@ const magazines = defineCollection({
       link: z.string(), // flipbook reader URL
       order: z.number().int(),
       draft: z.boolean().default(false),
+      publishDate, // future = hidden until next build (2C)
     }),
 });
 

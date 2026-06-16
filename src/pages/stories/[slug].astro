@@ -2,9 +2,10 @@
 import { getCollection, render } from 'astro:content';
 import Base from '../../layouts/Base.astro';
 import DetailLayout from '../../components/DetailLayout.astro';
+import { isPublished } from '../../lib/content';
 
 export async function getStaticPaths() {
-  const stories = (await getCollection('stories', ({ data }) => !data.draft)).sort(
+  const stories = (await getCollection('stories', ({ data }) => isPublished(data))).sort(
     (a, b) => b.data.year - a.data.year,
   );
   return stories.map((entry, i) => ({

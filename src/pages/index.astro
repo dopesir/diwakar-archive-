@@ -7,6 +7,7 @@ import StatCounter from '../components/StatCounter.astro';
 import Reveal from '../components/Reveal.astro';
 import { getSectionSettings } from '../lib/site';
 import { objectPosition } from '../lib/media';
+import { isPublished } from '../lib/content';
 
 // Section copy + show/hide + order are CMS-managed (sections.yaml). The MARKUP
 // below stays in code; only text/visibility/order is data.
@@ -20,7 +21,7 @@ const orderedSections = [
 
 const ordered = (await getCollection('hero')).sort((a, b) => a.data.order - b.data.order);
 
-const featured = (await getCollection('work', ({ data }) => !data.draft))
+const featured = (await getCollection('work', ({ data }) => isPublished(data)))
   .filter((w) => w.data.featured)
   .sort((a, b) => b.data.year - a.data.year);
 

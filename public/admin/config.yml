@@ -409,6 +409,11 @@ collections:
         widget: boolean
         default: false
         hint: On = kept here but not shown on the website.
+      - name: publishDate
+        label: Publish date (optional)
+        widget: datetime
+        required: false
+        hint: 'Leave blank to publish now. A future date/time keeps it hidden until then — the site must rebuild for it to appear (see README on scheduled publishing).'
 
   # ---------------------------------------------------------------- WORK
   - name: work
@@ -483,6 +488,11 @@ collections:
         widget: boolean
         default: false
         hint: On = kept here but not published to the website.
+      - name: publishDate
+        label: Publish date (optional)
+        widget: datetime
+        required: false
+        hint: 'Leave blank to publish now. A future date/time keeps it hidden until then — the site must rebuild for it to appear (see README on scheduled publishing).'
       - name: seo
         label: SEO (optional)
         widget: object
@@ -580,6 +590,11 @@ collections:
         widget: boolean
         default: false
         hint: On = kept here but not published to the website.
+      - name: publishDate
+        label: Publish date (optional)
+        widget: datetime
+        required: false
+        hint: 'Leave blank to publish now. A future date/time keeps it hidden until then — the site must rebuild for it to appear (see README on scheduled publishing).'
       - name: seo
         label: SEO (optional)
         widget: object
@@ -676,6 +691,11 @@ collections:
         widget: boolean
         default: false
         hint: On = kept here but not published to the website.
+      - name: publishDate
+        label: Publish date (optional)
+        widget: datetime
+        required: false
+        hint: 'Leave blank to publish now. A future date/time keeps it hidden until then — the site must rebuild for it to appear (see README on scheduled publishing).'
       - name: seo
         label: SEO (optional)
         widget: object

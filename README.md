@@ -120,11 +120,23 @@ is the tiny **sveltia-cms-auth** worker:
 
 - **Hero slides** — caption, location, focus point, scrim tone, and upload desktop/mobile
   photos (7 slides).
-- **Work / Stories / Thoughts** — add, edit, delete entries; upload photos; toggle
-  **“Hide from site”** (this is the unpublish switch — hidden entries are dropped from the
-  build).
+- **Work / Stories / Thoughts** — add, edit, delete entries; upload photos; set **alt
+  text**, **caption**, and (Work) a **focus point** for the grid crop; toggle
+  **“Hide from site”** (the unpublish switch) or set a **Publish date** to schedule it.
+- **Redirects** — send an old or vanity path to another page; the `_redirects` file is
+  regenerated on every build.
+- **Site settings / Home sections / Connect copy** — global SEO, announcement bar,
+  contact + social links, home-page section copy/order, and the Connect call-to-action.
 - Uploaded photos are committed to `src/assets/uploads/` and run through the image
   pipeline automatically.
+
+### Scheduled publishing (note)
+
+A **Publish date** in the future keeps an entry hidden until then — but because the site is
+**statically built**, the entry only appears the next time the site builds. For it to go
+live automatically at the scheduled time, set up a periodic rebuild (e.g. a daily
+**Cloudflare Pages Deploy Hook** triggered by a cron/scheduled task). Without that, just
+trigger a deploy (any CMS save does) on/after the date and it appears.
 
 ## Mobile hero photos (optional, recommended)
 
