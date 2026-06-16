@@ -56,6 +56,14 @@ const settings = defineCollection({
           linkLabel: z.string().optional(),
         })
         .optional(),
+      connect: z
+        .object({
+          eyebrow: z.string().optional(),
+          heading: z.string().optional(),
+          body: z.string().optional(),
+          note: z.string().optional(),
+        })
+        .optional(),
       // ── sections.yaml ────────────────────────────────────────────
       hero: z.object({ visible: z.boolean().default(true) }).optional(),
       intro: z

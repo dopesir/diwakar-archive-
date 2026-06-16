@@ -5,16 +5,13 @@
 import SocialLinks from './SocialLinks.astro';
 import { getSiteSettings } from '../lib/site';
 
-const { contact } = await getSiteSettings();
+const { contact, connect } = await getSiteSettings();
 ---
 
 <section class="connect-cta" aria-label="Connect and collaborate">
-  <p class="sec-eyebrow">Connect &amp; Collaborate</p>
-  <h2>Find the work online.</h2>
-  <p class="connect-cta-body">
-    For exhibitions, editorial licensing, collaborations, or limited edition prints. Over 1,300
-    images available on Getty Images for immediate licensing.
-  </p>
+  <p class="sec-eyebrow">{connect.eyebrow}</p>
+  <h2>{connect.heading}</h2>
+  <p class="connect-cta-body">{connect.body}</p>
   <SocialLinks />
   {
     (contact.email || contact.phone) && (
@@ -25,7 +22,7 @@ const { contact } = await getSiteSettings();
       </p>
     )
   }
-  <p class="soc-note">Representation by invitation only · India Today Group</p>
+  <p class="soc-note">{connect.note}</p>
 </section>
 
 <style>

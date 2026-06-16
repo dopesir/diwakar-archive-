@@ -158,6 +158,32 @@ collections:
                 widget: string
                 required: false
                 hint: 'Text for the link, e.g. "Learn more". Defaults to "Learn more" if a link is set.'
+          - name: connect
+            label: Connect call-to-action
+            widget: object
+            collapsed: true
+            hint: 'The "Connect & Collaborate" copy shown on the Connect page and at the foot of every other page. (The footer itself stays in code.)'
+            fields:
+              - name: eyebrow
+                label: Eyebrow (small heading)
+                widget: string
+                required: false
+                hint: 'Small label above the heading, e.g. "Connect & Collaborate".'
+              - name: heading
+                label: Heading
+                widget: string
+                required: false
+                hint: 'The large heading, e.g. "Find the work online.".'
+              - name: body
+                label: Body text
+                widget: text
+                required: false
+                hint: 'The paragraph under the heading.'
+              - name: note
+                label: Footnote
+                widget: string
+                required: false
+                hint: 'Small line below the buttons, e.g. "Representation by invitation only · India Today Group".'
 
       # ---------------------------------------------------------- HOME SECTIONS
       - name: sections

@@ -22,7 +22,17 @@ export interface SiteSettings {
   contact: { email: string; phone: string };
   social: { instagram: SocialLink; linkedin: SocialLink; getty: SocialLink };
   announcement: { enabled: boolean; text: string; link: string; linkLabel: string };
+  connect: { eyebrow: string; heading: string; body: string; note: string };
 }
+
+const DEFAULT_CONNECT = {
+  eyebrow: 'Connect & Collaborate',
+  heading: 'Find the work online.',
+  body:
+    'For exhibitions, editorial licensing, collaborations, or limited edition prints. ' +
+    'Over 1,300 images available on Getty Images for immediate licensing.',
+  note: 'Representation by invitation only · India Today Group',
+};
 
 const DEFAULT_DESCRIPTION =
   'Purushottam Diwakar — 27 years of photojournalism with the India Today Group. ' +
@@ -69,6 +79,12 @@ export async function getSiteSettings(): Promise<SiteSettings> {
       text: str(d.announcement?.text),
       link: str(d.announcement?.link),
       linkLabel: str(d.announcement?.linkLabel),
+    },
+    connect: {
+      eyebrow: str(d.connect?.eyebrow, DEFAULT_CONNECT.eyebrow),
+      heading: str(d.connect?.heading, DEFAULT_CONNECT.heading),
+      body: str(d.connect?.body, DEFAULT_CONNECT.body),
+      note: str(d.connect?.note, DEFAULT_CONNECT.note),
     },
   };
 }

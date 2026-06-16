@@ -1717,8 +1717,12 @@ html.has-announce .nav {
   font-size: clamp(2rem, 5vw, 3rem);
   font-weight: 700;
   line-height: 1.1;
-  margin: 1rem 0 1.4rem;
+  margin: 1rem auto 1.4rem;
   letter-spacing: -0.02em;
+  /* Heading copy is CMS-driven (2D); keep the art-directed two-line wrap without
+     a hardcoded <br>. balance evens the lines; the cap nudges short copy to wrap. */
+  max-width: 12ch;
+  text-wrap: balance;
 }
 .contact-body {
   font-size: 0.95rem;
