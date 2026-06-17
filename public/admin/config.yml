@@ -699,7 +699,7 @@ collections:
     slug: '{{slug}}'
     identifier_field: title
     summary: '{{year}} · {{title}}'
-    sortable_fields: [year, title]
+    sortable_fields: [order, year, title]
     view_filters:
       - { label: 'Featured on home', field: featured, pattern: true }
       - { label: 'Hidden from site', field: draft, pattern: true }
@@ -822,7 +822,7 @@ collections:
     slug: '{{slug}}'
     identifier_field: title
     summary: '{{date}} — {{title}}'
-    sortable_fields: [year, title]
+    sortable_fields: [order, year, title]
     view_filters:
       - { label: 'Hidden from site', field: draft, pattern: true }
     fields:
@@ -943,7 +943,7 @@ collections:
     slug: '{{slug}}'
     identifier_field: title
     summary: '{{date}} — {{title}}'
-    sortable_fields: [year, title]
+    sortable_fields: [order, year, title]
     view_filters:
       - { label: 'Hidden from site', field: draft, pattern: true }
     fields:
