@@ -292,6 +292,97 @@ collections:
                 required: false
                 hint: 'Optional sentence shown under the heading. Blank = hidden.'
 
+      # ---------------------------------------------------------- ABOUT BIO (3A)
+      - name: about
+        label: About — biography
+        file: src/content/settings/about.yaml
+        media_folder: ../../assets/uploads
+        public_folder: ../../assets/uploads
+        icon: person
+        description: Optional block-composed biography for the About page. Leave the list empty to keep the original written bio.
+        fields:
+          - name: aboutBlocks
+            label: Biography blocks
+            label_singular: block
+            widget: list
+            required: false
+            hint: 'Leave empty to keep the original biography. Add blocks to compose your own — they replace the written bio.'
+            # Reusable block palette, shared by the Stories and Thoughts bodies.
+            types: &content_blocks
+              - name: richText
+                label: Text
+                widget: object
+                summary: 'Text'
+                fields:
+                  - name: markdown
+                    label: Text
+                    widget: text
+                    hint: 'Plain text. **bold**, *italic*, `code` and [links](https://…) are supported; a blank line starts a new paragraph. (No raw HTML.)'
+              - name: image
+                label: Image
+                widget: object
+                summary: 'Image — {{fields.alt}}'
+                fields:
+                  - { name: image, label: Image, widget: image }
+                  - name: alt
+                    label: Alt text (accessibility)
+                    widget: string
+                    required: false
+                    hint: 'Describes the image for screen readers. If blank, the caption is used.'
+                  - { name: caption, label: Caption, widget: string, required: false }
+              - name: gallery
+                label: Gallery
+                widget: object
+                summary: 'Gallery ({{fields.columns}} columns)'
+                fields:
+                  - name: columns
+                    label: Columns
+                    widget: select
+                    options: ['2', '3', '4']
+                    default: '3'
+                    hint: 'On phones the gallery collapses to 1–2 columns automatically.'
+                  - name: images
+                    label: Images
+                    widget: list
+                    fields:
+                      - { name: image, label: Image, widget: image }
+                      - { name: alt, label: Alt text, widget: string, required: false }
+                      - { name: caption, label: Caption, widget: string, required: false }
+              - name: quote
+                label: Pull quote
+                widget: object
+                summary: 'Quote — {{fields.text}}'
+                fields:
+                  - { name: text, label: Quote, widget: text }
+                  - { name: cite, label: Attribution, widget: string, required: false }
+              - name: cta
+                label: Call to action
+                widget: object
+                summary: 'Button — {{fields.label}}'
+                fields:
+                  - { name: heading, label: Heading, widget: string, required: false }
+                  - { name: text, label: Text, widget: text, required: false }
+                  - { name: label, label: Button label, widget: string }
+                  - name: href
+                    label: Button link
+                    widget: string
+                    hint: 'A site path ("/connect/") or a full https:// URL.'
+              - name: embed
+                label: Video link
+                widget: object
+                summary: 'Video — {{fields.title}}'
+                fields:
+                  - name: provider
+                    label: Provider
+                    widget: select
+                    options: [youtube, vimeo]
+                    default: youtube
+                  - name: url
+                    label: Video URL
+                    widget: string
+                    hint: 'Full https:// URL on the chosen provider. Shown as a privacy-friendly link-out card (no third-party tracking embed).'
+                  - { name: title, label: Title, widget: string, required: false }
+
   # ---------------------------------------------------------------- REDIRECTS
   - name: redirects
     label: Redirects
@@ -648,6 +739,13 @@ collections:
             widget: boolean
             default: false
             hint: 'On = ask search engines not to list this page. It still works via a direct link.'
+      - name: blocks
+        label: Body blocks (optional)
+        label_singular: block
+        widget: list
+        required: false
+        hint: 'Optional rich body. If you add blocks here, they replace the plain "Story" text below.'
+        types: *content_blocks
       - name: body
         label: Story
         widget: markdown
@@ -749,6 +847,13 @@ collections:
             widget: boolean
             default: false
             hint: 'On = ask search engines not to list this page. It still works via a direct link.'
+      - name: blocks
+        label: Body blocks (optional)
+        label_singular: block
+        widget: list
+        required: false
+        hint: 'Optional rich body. If you add blocks here, they replace the plain "Reflection" text below.'
+        types: *content_blocks
       - name: body
         label: Reflection
         widget: markdown

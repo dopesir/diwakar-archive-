@@ -8,6 +8,55 @@ import { glob } from 'astro/loaders';
  */
 
 /**
+ * Flexible content blocks (Tier 3A). A constrained page-builder for FREE-FORM
+ * body regions only (About bio + story/thought bodies) — never the art-directed
+ * home sections. Each block is a constrained type rendered by an approved
+ * component (src/components/blocks/*). There is deliberately NO raw-HTML block;
+ * `richText` is a safe markdown subset rendered by src/lib/richtext.ts.
+ */
+const blocksField = ({ image }: SchemaContext) =>
+  z
+    .array(
+      z.discriminatedUnion('type', [
+        z.object({ type: z.literal('richText'), markdown: z.string().default('') }),
+        z.object({
+          type: z.literal('image'),
+          image: image(),
+          alt: z.string().optional(),
+          caption: z.string().optional(),
+        }),
+        z.object({
+          type: z.literal('gallery'),
+          columns: z.enum(['2', '3', '4']).default('3'),
+          images: z
+            .array(
+              z.object({
+                image: image(),
+                alt: z.string().optional(),
+                caption: z.string().optional(),
+              }),
+            )
+            .default([]),
+        }),
+        z.object({ type: z.literal('quote'), text: z.string(), cite: z.string().optional() }),
+        z.object({
+          type: z.literal('cta'),
+          heading: z.string().optional(),
+          text: z.string().optional(),
+          label: z.string(),
+          href: z.string(),
+        }),
+        z.object({
+          type: z.literal('embed'),
+          provider: z.enum(['youtube', 'vimeo']),
+          url: z.string(),
+          title: z.string().optional(),
+        }),
+      ]),
+    )
+    .optional();
+
+/**
  * Global Site Settings + Section meta (CMS Tier 1). Two singleton YAML files
  * live in src/content/settings/ — `site.yaml` (SEO defaults, analytics, contact,
  * socials, announcement bar) and `sections.yaml` (per-section copy + show/hide +
@@ -97,6 +146,9 @@ const settings = defineCollection({
           intro: z.string().optional(),
         })
         .optional(),
+      // ── about.yaml (Tier 3A) ─────────────────────────────────────
+      // Optional block-composed biography. Empty = the coded prose renders.
+      aboutBlocks: blocksField({ image }),
     }),
 });
 
@@ -209,6 +261,7 @@ const narrativeSchema = ({ image }: SchemaContext) =>
     mood: z.enum(['drought', 'night', 'water']).optional(),
     draft: z.boolean().default(false),
     publishDate, // future = hidden until next build (2C)
+    blocks: blocksField({ image }), // optional block body (3A); empty = markdown body renders
     seo: seoFields({ image }),
   });
 

@@ -1,0 +1,35 @@
+---
+// embed block (3A). To keep the strict CSP intact (no third-party frame-src),
+// this is a privacy-friendly LINK-OUT card — NOT an inline iframe. It validates
+// the URL against the chosen provider's own domains, then links out in a new
+// tab. Whitelisted providers only: YouTube, Vimeo.
+const { block } = Astro.props;
+
+const PROVIDERS: Record<string, { label: string; hosts: RegExp }> = {
+  youtube: { label: 'Watch on YouTube', hosts: /^(www\.)?(youtube\.com|youtu\.be)$/i },
+  vimeo: { label: 'Watch on Vimeo', hosts: /^(www\.)?(vimeo\.com|player\.vimeo\.com)$/i },
+};
+
+const provider = PROVIDERS[block?.provider as string];
+let href: string | null = null;
+if (provider && typeof block?.url === 'string') {
+  try {
+    const u = new URL(block.url);
+    if (u.protocol === 'https:' && provider.hosts.test(u.hostname)) href = u.toString();
+  } catch {
+    href = null;
+  }
+}
+---
+
+{
+  href && provider && (
+    <a class="block block-embed" href={href} target="_blank" rel="noopener noreferrer">
+      <span class="block-embed-play" aria-hidden="true">▶</span>
+      <span class="block-embed-text">
+        <span class="block-embed-title">{block.title ?? provider.label}</span>
+        <span class="block-embed-prov">{provider.label} ↗</span>
+      </span>
+    </a>
+  )
+}

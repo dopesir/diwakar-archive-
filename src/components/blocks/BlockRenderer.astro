@@ -1,0 +1,39 @@
+---
+// Maps each flexible content block (3A) to its approved component. Used for the
+// About biography and story/thought bodies only. Unknown types are skipped, so
+// the page can never break on unexpected data.
+import RichTextBlock from './RichTextBlock.astro';
+import ImageBlock from './ImageBlock.astro';
+import GalleryBlock from './GalleryBlock.astro';
+import QuoteBlock from './QuoteBlock.astro';
+import CtaBlock from './CtaBlock.astro';
+import EmbedBlock from './EmbedBlock.astro';
+
+interface Props {
+  blocks?: any[];
+}
+const { blocks = [] } = Astro.props;
+const list = Array.isArray(blocks) ? blocks : [];
+---
+
+{
+  list.length > 0 && (
+    <div class="blocks">
+      {list.map((block) =>
+        block?.type === 'richText' ? (
+          <RichTextBlock block={block} />
+        ) : block?.type === 'image' ? (
+          <ImageBlock block={block} />
+        ) : block?.type === 'gallery' ? (
+          <GalleryBlock block={block} />
+        ) : block?.type === 'quote' ? (
+          <QuoteBlock block={block} />
+        ) : block?.type === 'cta' ? (
+          <CtaBlock block={block} />
+        ) : block?.type === 'embed' ? (
+          <EmbedBlock block={block} />
+        ) : null,
+      )}
+    </div>
+  )
+}

@@ -1,0 +1,27 @@
+---
+// cta block (3A). Optional heading + text and a button reusing the .btn-line
+// style. The href is validated (http(s)/mailto/relative only); an unsafe href
+// renders the label as plain text rather than a link.
+import { safeHref } from '../../lib/richtext';
+const { block } = Astro.props;
+const href = safeHref(block?.href ?? '');
+const external = href ? /^https?:/i.test(href) : false;
+---
+
+<div class="block block-cta">
+  {block?.heading && <p class="block-cta-h">{block.heading}</p>}
+  {block?.text && <p class="block-cta-t">{block.text}</p>}
+  {
+    href ? (
+      <a
+        class="btn-line"
+        href={href}
+        {...external ? { target: '_blank', rel: 'noopener noreferrer' } : {}}
+      >
+        {block.label}
+      </a>
+    ) : (
+      <span class="block-cta-plain">{block?.label}</span>
+    )
+  }
+</div>

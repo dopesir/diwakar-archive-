@@ -1,0 +1,29 @@
+---
+// image block (3A). Reuses Astro's image pipeline; opens in the site-wide
+// lightbox via data-lb (Lightbox is mounted on every page in Base.astro).
+import { Image, getImage } from 'astro:assets';
+const { block } = Astro.props;
+const big = await getImage({ src: block.image, width: 1600, format: 'webp', quality: 80 });
+const cap = block.caption ?? '';
+const alt = block.alt ?? cap;
+---
+
+<figure class="block block-image">
+  <button
+    type="button"
+    class="block-image-btn"
+    data-lb={big.src}
+    data-lbcap={cap || alt}
+    aria-label="View larger photo"
+  >
+    <Image
+      src={block.image}
+      alt={alt}
+      widths={[600, 1000, 1600]}
+      sizes="(max-width: 760px) 92vw, 760px"
+      loading="lazy"
+      decoding="async"
+    />
+  </button>
+  {cap && <figcaption>{cap}</figcaption>}
+</figure>

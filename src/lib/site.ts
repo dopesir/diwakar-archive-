@@ -90,6 +90,16 @@ export async function getSiteSettings(): Promise<SiteSettings> {
 }
 
 /**
+ * About biography blocks (about.yaml, Tier 3A). Returns the optional block list;
+ * empty means the coded prose in about.astro renders unchanged.
+ */
+export async function getAboutBlocks(): Promise<any[]> {
+  const entry = await getEntry('settings', 'about');
+  const blocks = (entry?.data as any)?.aboutBlocks;
+  return Array.isArray(blocks) ? blocks : [];
+}
+
+/**
  * Home-page section meta (sections.yaml): editable copy + show/hide + order.
  * Markup stays in code (index.astro); only copy/visibility/order is data here.
  */
