@@ -1,0 +1,38 @@
+---
+// Accessible language switcher (Tier 3C). Pure links — NO client script, so it
+// is inherently CSP-safe and works without JS. It maps the current path between
+// English (`/…`) and Hindi (`/hi/…`); until Hindi pages exist, the Hindi URL
+// falls back to the English content (Astro i18n `fallbackType: 'rewrite'`).
+//
+// It is its OWN element (not part of the locked Nav/Footer).
+import { locales, languageShort, languageNames, resolveLocale, t } from '../i18n/ui';
+
+const current = resolveLocale(Astro.currentLocale);
+const pathname = Astro.url.pathname;
+// Canonical English path (strip any /hi prefix); routes always have trailing slash.
+const basePath = pathname.replace(/^\/hi(?=\/|$)/, '') || '/';
+const urlFor = (loc: string) =>
+  loc === 'en' ? basePath : `/hi${basePath}`.replace(/\/{2,}/g, '/');
+---
+
+<nav class="lang-switch" aria-label={t(current, 'lang.switch')}>
+  {
+    locales.map((loc) =>
+      loc === current ? (
+        <span class="lang-opt is-current" aria-current="true" lang={loc}>
+          {languageShort[loc]}
+        </span>
+      ) : (
+        <a
+          class="lang-opt"
+          href={urlFor(loc)}
+          lang={loc}
+          hreflang={loc}
+          aria-label={languageNames[loc]}
+        >
+          {languageShort[loc]}
+        </a>
+      ),
+    )
+  }
+</nav>

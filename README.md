@@ -138,6 +138,24 @@ live automatically at the scheduled time, set up a periodic rebuild (e.g. a dail
 **Cloudflare Pages Deploy Hook** triggered by a cron/scheduled task). Without that, just
 trigger a deploy (any CMS save does) on/after the date and it appears.
 
+## Languages (English / Hindi)
+
+The site ships **bilingual infrastructure**. English is the default locale and lives
+unprefixed at `/` (unchanged). Hindi lives under `/hi/` and a discreet **language
+switcher** (bottom-left, no JavaScript) moves between them.
+
+Hindi content is **not written yet**: every `/hi/…` URL automatically renders the English
+content in place (Astro i18n `fallbackType: 'rewrite'`), so Hindi never 404s or shows a
+blank page. To add Hindi later:
+
+- **UI strings:** extend `src/i18n/ui.ts` (the `hi` map) — anything missing falls back to
+  English.
+- **Page/content translation:** author Hindi pages/entries; once a `/hi/…` route exists it
+  takes over from the English fallback for that URL.
+
+The locked Nav/Footer remain code-only and English-labelled; the switcher is the primary
+language control.
+
 ## Mobile hero photos (optional, recommended)
 
 The hero currently serves **desktop** photos cropped to portrait on phones — the build

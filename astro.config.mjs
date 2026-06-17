@@ -32,6 +32,21 @@ export default defineConfig({
   site: 'https://diwakar-archive.pages.dev',
   output: 'static',
   trailingSlash: 'always',
+  /**
+   * Tier 3C — i18n. English is the default locale and stays UNPREFIXED at `/`
+   * (byte-identical to pre-i18n). Hindi lives under `/hi/`. Until Hindi pages
+   * are authored, `fallbackType: 'rewrite'` makes every `/hi/...` URL render the
+   * English content in place — so Hindi never 404s and never shows a blank page.
+   */
+  i18n: {
+    defaultLocale: 'en',
+    locales: ['en', 'hi'],
+    routing: {
+      prefixDefaultLocale: false,
+      fallbackType: 'rewrite',
+    },
+    fallback: { hi: 'en' },
+  },
   integrations: [sitemap(), generateRedirects],
   image: {
     // sharp is Astro's default image service — declared explicitly for clarity.

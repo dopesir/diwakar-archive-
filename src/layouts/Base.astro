@@ -17,6 +17,7 @@ import Lightbox from '../components/Lightbox.astro';
 import ConnectCta from '../components/ConnectCta.astro';
 import AnnouncementBar from '../components/AnnouncementBar.astro';
 import SEO from '../components/SEO.astro';
+import LangSwitcher from '../components/LangSwitcher.astro';
 import { getSiteSettings, themeStyle } from '../lib/site';
 
 interface Props {
@@ -65,10 +66,19 @@ const showAnnounce = site.announcement.enabled && site.announcement.text.trim() 
 // Constrained theme tokens (3B): inline CSS custom properties on <html>.
 // Empty string when everything is default, so default output is unchanged.
 const themeVars = themeStyle(site.appearance);
+
+// Locale-stripped path (3C). Lets the LOCKED Nav's active states and the
+// ConnectCta skip keep working under /hi/ without editing Nav.astro. For English
+// pages this equals the pathname, so English output stays byte-identical.
+const localePath = Astro.url.pathname.replace(/^\/hi(?=\/|$)/, '') || '/';
 ---
 
 <!doctype html>
-<html lang="en" class={showAnnounce ? 'has-announce' : undefined} style={themeVars || undefined}>
+<html
+  lang={Astro.currentLocale ?? 'en'}
+  class={showAnnounce ? 'has-announce' : undefined}
+  style={themeVars || undefined}
+>
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
@@ -106,12 +116,13 @@ const themeVars = themeStyle(site.appearance);
     <a href="#main" class="skip-link">Skip to content</a>
     <CustomCursor />
     <AnnouncementBar />
-    <Nav home={home} path={Astro.url.pathname} />
+    <Nav home={home} path={localePath} />
     <main id="main">
       <slot />
     </main>
-    {Astro.url.pathname !== '/connect/' && <ConnectCta />}
+    {localePath !== '/connect/' && <ConnectCta />}
     <Footer />
+    <LangSwitcher />
     <Lightbox />
   </body>
 </html>

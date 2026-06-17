@@ -365,6 +365,52 @@ html.has-announce .nav {
   }
 }
 
+/* ── LANGUAGE SWITCHER (3C) ──────────────────────────────────────────── */
+/* Discreet fixed pill; its own element, not part of the locked Nav/Footer.
+   Pure links — no script. Sits below the nav so the mobile menu overlays it. */
+.lang-switch {
+  position: fixed;
+  left: 0.8rem;
+  bottom: 0.8rem;
+  z-index: 900;
+  display: inline-flex;
+  gap: 2px;
+  padding: 3px;
+  border-radius: 999px;
+  background: rgba(245, 237, 216, 0.92);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+}
+.lang-opt {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 40px;
+  min-height: 40px;
+  padding: 0 0.55rem;
+  border-radius: 999px;
+  text-decoration: none;
+  color: var(--ink2);
+  transition: color 0.2s, background 0.2s;
+}
+.lang-opt.is-current {
+  background: var(--ochre);
+  color: var(--parch);
+}
+.lang-opt:not(.is-current):hover {
+  color: var(--ochre);
+}
+@media (max-width: 480px) {
+  .lang-switch {
+    left: 0.6rem;
+    bottom: 0.6rem;
+  }
+}
+
 /* ── HERO SLIDER ─────────────────────────────────────────────────────── */
 .hero {
   position: relative;
