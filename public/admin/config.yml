@@ -408,6 +408,133 @@ collections:
                     hint: 'Full https:// URL on the chosen provider. Shown as a privacy-friendly link-out card (no third-party tracking embed).'
                   - { name: title, label: Title, widget: string, required: false }
 
+      # ---------------------------------------------------------- LAYOUT (3D)
+      - name: layout
+        label: Layout & alignment
+        file: src/content/settings/layout.yaml
+        media_folder: ../../assets/uploads
+        public_folder: ../../assets/uploads
+        icon: dashboard_customize
+        description: Arrange sections and listings with safe presets. Every option defaults to the current design and cannot break the layout (no raw CSS).
+        fields:
+          - name: layout
+            label: Layout
+            widget: object
+            fields:
+              - name: sections
+                label: Section alignment & background
+                widget: object
+                collapsed: true
+                hint: 'Applies to the text sections only — not the locked hero or art-directed strips.'
+                fields:
+                  - name: intro
+                    label: Home — Introduction
+                    widget: object
+                    collapsed: true
+                    fields: &section_layout_fields
+                      - {
+                          name: align,
+                          label: Alignment,
+                          widget: select,
+                          default: left,
+                          options: [left, center, right],
+                        }
+                      - {
+                          name: width,
+                          label: Width,
+                          widget: select,
+                          default: normal,
+                          options: [narrow, normal, wide, full],
+                        }
+                      - {
+                          name: spacing,
+                          label: Vertical spacing,
+                          widget: select,
+                          default: normal,
+                          options: [compact, normal, spacious],
+                        }
+                      - name: background
+                        label: Background tone
+                        widget: select
+                        default: none
+                        options: [none, parchment, sand, ink]
+                        hint: 'The dark "ink" tone automatically switches its text to a light, legible treatment — contrast always passes.'
+                  - { name: featured, label: Home — Selected Frames, widget: object, collapsed: true, fields: *section_layout_fields }
+                  - { name: workIntro, label: Work — intro, widget: object, collapsed: true, fields: *section_layout_fields }
+                  - { name: storiesIntro, label: Stories — intro, widget: object, collapsed: true, fields: *section_layout_fields }
+                  - { name: thoughtsIntro, label: Thoughts — intro, widget: object, collapsed: true, fields: *section_layout_fields }
+              - name: grids
+                label: Listing grids
+                widget: object
+                collapsed: true
+                fields:
+                  - name: work
+                    label: Work grid
+                    widget: object
+                    collapsed: true
+                    fields:
+                      - {
+                          name: columns,
+                          label: Columns,
+                          widget: select,
+                          default: auto,
+                          options: [auto, '2', '3', '4'],
+                        }
+                      - {
+                          name: gap,
+                          label: Gap,
+                          widget: select,
+                          default: normal,
+                          options: [tight, normal, roomy],
+                        }
+                      - {
+                          name: aspect,
+                          label: Image shape,
+                          widget: select,
+                          default: landscape,
+                          options: [square, portrait, landscape, original],
+                        }
+                      - {
+                          name: imageFit,
+                          label: Image fit,
+                          widget: select,
+                          default: cover,
+                          options: [cover, contain],
+                        }
+                      - name: sort
+                        label: Order
+                        widget: select
+                        default: newest
+                        options: [newest, oldest, by-year, manual]
+                        hint: 'Pick "manual" to arrange items yourself with each Work item''s Order/Size fields.'
+                  - name: stories
+                    label: Stories list
+                    widget: object
+                    collapsed: true
+                    fields: &list_layout_fields
+                      - {
+                          name: columns,
+                          label: Columns,
+                          widget: select,
+                          default: '1',
+                          options: ['1', '2', '3'],
+                        }
+                      - {
+                          name: gap,
+                          label: Gap,
+                          widget: select,
+                          default: normal,
+                          options: [tight, normal, roomy],
+                        }
+                      - {
+                          name: sort,
+                          label: Order,
+                          widget: select,
+                          default: newest,
+                          options: [newest, oldest, by-year, manual],
+                        }
+                  - { name: thoughts, label: Thoughts list, widget: object, collapsed: true, fields: *list_layout_fields }
+
   # ---------------------------------------------------------------- REDIRECTS
   - name: redirects
     label: Redirects
@@ -635,6 +762,19 @@ collections:
         widget: datetime
         required: false
         hint: 'Leave blank to publish now. A future date/time keeps it hidden until then — the site must rebuild for it to appear (see README on scheduled publishing).'
+      - name: order
+        label: Manual order
+        widget: number
+        value_type: int
+        required: false
+        hint: 'Used only when this listing''s grid is set to "manual" order. Lower numbers appear first.'
+      - name: size
+        label: Bento size
+        widget: select
+        required: false
+        default: normal
+        options: [normal, large, wide, tall]
+        hint: 'Used only with "manual" order — spans a larger cell on desktop and collapses to normal on mobile.'
       - name: seo
         label: SEO (optional)
         widget: object
@@ -737,6 +877,19 @@ collections:
         widget: datetime
         required: false
         hint: 'Leave blank to publish now. A future date/time keeps it hidden until then — the site must rebuild for it to appear (see README on scheduled publishing).'
+      - name: order
+        label: Manual order
+        widget: number
+        value_type: int
+        required: false
+        hint: 'Used only when this listing''s grid is set to "manual" order. Lower numbers appear first.'
+      - name: size
+        label: Bento size
+        widget: select
+        required: false
+        default: normal
+        options: [normal, large, wide, tall]
+        hint: 'Used only with "manual" order — spans a larger cell on desktop and collapses to normal on mobile.'
       - name: seo
         label: SEO (optional)
         widget: object
@@ -845,6 +998,19 @@ collections:
         widget: datetime
         required: false
         hint: 'Leave blank to publish now. A future date/time keeps it hidden until then — the site must rebuild for it to appear (see README on scheduled publishing).'
+      - name: order
+        label: Manual order
+        widget: number
+        value_type: int
+        required: false
+        hint: 'Used only when this listing''s grid is set to "manual" order. Lower numbers appear first.'
+      - name: size
+        label: Bento size
+        widget: select
+        required: false
+        default: normal
+        options: [normal, large, wide, tall]
+        hint: 'Used only with "manual" order — spans a larger cell on desktop and collapses to normal on mobile.'
       - name: seo
         label: SEO (optional)
         widget: object

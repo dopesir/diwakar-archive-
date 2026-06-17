@@ -2039,6 +2039,183 @@ html.has-announce .nav {
   color: var(--smoke);
 }
 
+/* ── LAYOUT & ALIGNMENT CONTROLS (3D) ────────────────────────────────── */
+/* Every rule is gated by a data-* attribute that the resolver emits ONLY for a
+   non-default value, so a default site renders none of these and is unchanged.
+   No raw CSS/pixels are ever exposed — these map constrained selects to tokens. */
+
+/* Per-section: alignment / width / spacing */
+[data-align='center'] {
+  text-align: center;
+}
+[data-align='right'] {
+  text-align: right;
+}
+[data-align='left'] {
+  text-align: left;
+}
+[data-width='narrow'] {
+  max-width: 760px;
+  margin-inline: auto;
+}
+[data-width='wide'] {
+  max-width: 1500px;
+  margin-inline: auto;
+}
+[data-width='full'] {
+  max-width: none;
+}
+[data-space='compact'] {
+  padding-block: 2.5rem;
+}
+[data-space='spacious'] {
+  padding-block: 8rem;
+}
+
+/* Per-section background tones — each carries its OWN matched text treatment so
+   contrast always passes. The client picks a tone, never a colour. */
+[data-bg] {
+  padding: clamp(1.75rem, 3vw, 3rem);
+  border-radius: 3px;
+}
+[data-bg='parchment'] {
+  background: #efe5cc;
+}
+[data-bg='sand'] {
+  background: var(--sand-lt);
+}
+[data-bg='ink'] {
+  background: var(--ink);
+  color: var(--parch);
+}
+/* Dark tone ⇒ flip every text/accent to the light treatment. */
+[data-bg='ink'] p,
+[data-bg='ink'] h1,
+[data-bg='ink'] h2,
+[data-bg='ink'] h3,
+[data-bg='ink'] .sec-title,
+[data-bg='ink'] .stat-n,
+[data-bg='ink'] .sig {
+  color: var(--parch);
+}
+[data-bg='ink'] .sec-eyebrow,
+[data-bg='ink'] .eyebrow,
+[data-bg='ink'] .feat-label,
+[data-bg='ink'] .stat-l,
+[data-bg='ink'] .about-quote,
+[data-bg='ink'] a {
+  color: var(--sand);
+}
+
+/* Per-grid: the Work photo grid */
+.work-grid[data-cols='2'] {
+  grid-template-columns: repeat(2, 1fr);
+}
+.work-grid[data-cols='3'] {
+  grid-template-columns: repeat(3, 1fr);
+}
+.work-grid[data-cols='4'] {
+  grid-template-columns: repeat(4, 1fr);
+}
+.work-grid[data-gap='tight'] {
+  gap: 1rem;
+}
+.work-grid[data-gap='roomy'] {
+  gap: 3.5rem;
+}
+.work-grid[data-aspect='square'] .wimg {
+  aspect-ratio: 1 / 1;
+}
+.work-grid[data-aspect='portrait'] .wimg {
+  aspect-ratio: 3 / 4;
+}
+.work-grid[data-aspect='landscape'] .wimg {
+  aspect-ratio: 4 / 3;
+}
+.work-grid[data-aspect='original'] .wimg {
+  aspect-ratio: auto;
+}
+.work-grid[data-fit='contain'] .wimg-bg {
+  object-fit: contain;
+}
+/* Bento item sizes — only with explicit columns; dense flow avoids holes. */
+.work-grid[data-cols] {
+  grid-auto-flow: dense;
+}
+.work-grid[data-cols] .work-card[data-size='wide'] {
+  grid-column: span 2;
+}
+.work-grid[data-cols] .work-card[data-size='large'] {
+  grid-column: span 2;
+}
+.work-grid[data-cols] .work-card[data-size='large'] .wimg {
+  aspect-ratio: 16 / 10;
+}
+.work-grid[data-cols] .work-card[data-size='tall'] .wimg {
+  aspect-ratio: 3 / 4;
+}
+
+/* Per-listing: Stories / Thoughts become a grid only when columns > 1. */
+[data-listing-cols='2'],
+[data-listing-cols='3'] {
+  display: grid;
+  gap: 2.5rem;
+}
+[data-listing-cols='2'] {
+  grid-template-columns: repeat(2, 1fr);
+}
+[data-listing-cols='3'] {
+  grid-template-columns: repeat(3, 1fr);
+}
+[data-listing-cols] .story-block,
+[data-listing-cols] .thought-block {
+  margin-bottom: 0;
+}
+[data-listing-gap='tight'] {
+  gap: 1.2rem;
+}
+[data-listing-gap='roomy'] {
+  gap: 4rem;
+}
+[data-listing-cols] .story-block[data-size='wide'],
+[data-listing-cols] .story-block[data-size='large'],
+[data-listing-cols] .thought-block[data-size='wide'],
+[data-listing-cols] .thought-block[data-size='large'] {
+  grid-column: span 2;
+}
+
+/* Mobile MUST reflow and never overflow at any option combination. */
+@media (max-width: 700px) {
+  .work-grid[data-cols='3'],
+  .work-grid[data-cols='4'] {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .work-grid[data-cols] .work-card[data-size] {
+    grid-column: auto;
+  }
+  .work-grid[data-cols] .work-card[data-size] .wimg {
+    aspect-ratio: 4 / 3;
+  }
+  [data-listing-cols='3'] {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  [data-listing-cols] .story-block[data-size],
+  [data-listing-cols] .thought-block[data-size] {
+    grid-column: auto;
+  }
+}
+@media (max-width: 420px) {
+  .work-grid[data-cols='2'],
+  .work-grid[data-cols='3'],
+  .work-grid[data-cols='4'] {
+    grid-template-columns: 1fr;
+  }
+  [data-listing-cols='2'],
+  [data-listing-cols='3'] {
+    grid-template-columns: 1fr;
+  }
+}
+
 /* ── FOOTER ──────────────────────────────────────────────────────────── */
 footer {
   text-align: center;

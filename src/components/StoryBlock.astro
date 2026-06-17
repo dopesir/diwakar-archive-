@@ -4,8 +4,9 @@ import type { CollectionEntry } from 'astro:content';
 interface Props {
   entry: CollectionEntry<'stories'>;
   index: number;
+  size?: string;
 }
-const { entry, index } = Astro.props;
+const { entry, index, size } = Astro.props;
 const { title, date, quote, mood } = entry.data;
 
 const raw = (entry.body ?? '')
@@ -20,6 +21,7 @@ const delay = (index % 5) * 0.08;
   class={`story-block fu${mood ? ' mood-' + mood : ''}`}
   href={`/stories/${entry.id}/`}
   style={`transition-delay:${delay}s`}
+  data-size={size}
 >
   <div class="s-date">{date}</div>
   <h2 class="s-title">{title}</h2>

@@ -8,15 +8,22 @@ import { objectPosition } from '../lib/media';
 interface Props {
   entry: CollectionEntry<'work'>;
   index: number;
+  /** Bento size (3D) — only set when the listing sort is manual. */
+  size?: string;
 }
-const { entry, index } = Astro.props;
+const { entry, index, size } = Astro.props;
 const { title, year, image, alt, caption, focalPoint } = entry.data;
 
 const [pa, pb] = paletteFor(index);
 const pos = objectPosition(focalPoint);
 ---
 
-<a class="work-card fu" href={`/work/${entry.id}/`} style={`transition-delay:${(index % 6) * 0.07}s`}>
+<a
+  class="work-card fu"
+  href={`/work/${entry.id}/`}
+  style={`transition-delay:${(index % 6) * 0.07}s`}
+  data-size={size}
+>
   <div class="wimg">
     {
       image ? (

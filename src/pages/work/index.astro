@@ -4,9 +4,21 @@ import Base from '../../layouts/Base.astro';
 import WorkCard from '../../components/WorkCard.astro';
 import Reveal from '../../components/Reveal.astro';
 import { isPublished } from '../../lib/content';
+import {
+  getLayoutSettings,
+  sectionAttrs,
+  workGridAttrs,
+  sortEntries,
+  itemSize,
+} from '../../lib/layout';
 
-const work = (await getCollection('work', ({ data }) => isPublished(data))).sort(
-  (a, b) => b.data.year - a.data.year || a.data.title.localeCompare(b.data.title),
+// Layout controls (3D). Defaults reproduce the current grid + year-desc order.
+const L = await getLayoutSettings();
+const grid = L.grids.work;
+const work = sortEntries(
+  await getCollection('work', ({ data }) => isPublished(data)),
+  grid.sort,
+  true,
 );
 const description =
   'The archive — selected frames from over 27 years of photojournalism across Rajasthan, India and beyond by Purushottam Diwakar.';
@@ -14,10 +26,16 @@ const description =
 
 <Base title="Work — Purushottam Diwakar Archive" description={description}>
   <section class="sec">
-    <p class="sec-eyebrow">The Archive</p>
-    <h1 class="sec-title fu">Selected frames — un&#8209;staged, unflinching.</h1>
-    <div class="work-grid">
-      {work.map((entry, i) => <WorkCard entry={entry} index={i} />)}
+    <div class="sec-head" {...sectionAttrs(L.sections.workIntro)}>
+      <p class="sec-eyebrow">The Archive</p>
+      <h1 class="sec-title fu">Selected frames — un&#8209;staged, unflinching.</h1>
+    </div>
+    <div class="work-grid" {...workGridAttrs(grid)}>
+      {
+        work.map((entry, i) => (
+          <WorkCard entry={entry} index={i} size={itemSize(entry.data.size, grid.sort)} />
+        ))
+      }
     </div>
   </section>
   <Reveal />

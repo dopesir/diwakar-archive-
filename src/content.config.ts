@@ -57,6 +57,40 @@ const blocksField = ({ image }: SchemaContext) =>
     .optional();
 
 /**
+ * Layout & alignment controls (Tier 3D). Every option is a constrained enum
+ * mapped to a utility class/data-attribute — NEVER raw CSS or pixel values.
+ * Defaults reproduce the current design exactly (the resolver in src/lib/layout.ts
+ * emits NO attribute for a default value, so an untouched site is byte-identical).
+ */
+const sectionLayout = z
+  .object({
+    align: z.enum(['left', 'center', 'right']).optional(),
+    width: z.enum(['narrow', 'normal', 'wide', 'full']).optional(),
+    spacing: z.enum(['compact', 'normal', 'spacious']).optional(),
+    background: z.enum(['none', 'parchment', 'sand', 'ink']).optional(),
+  })
+  .optional();
+const gridLayout = z
+  .object({
+    columns: z.enum(['auto', '2', '3', '4']).optional(),
+    gap: z.enum(['tight', 'normal', 'roomy']).optional(),
+    aspect: z.enum(['square', 'portrait', 'landscape', 'original']).optional(),
+    imageFit: z.enum(['cover', 'contain']).optional(),
+    sort: z.enum(['newest', 'oldest', 'by-year', 'manual']).optional(),
+  })
+  .optional();
+const listLayout = z
+  .object({
+    columns: z.enum(['1', '2', '3']).optional(),
+    gap: z.enum(['tight', 'normal', 'roomy']).optional(),
+    sort: z.enum(['newest', 'oldest', 'by-year', 'manual']).optional(),
+  })
+  .optional();
+// Per-item bento controls (3D); `size` only takes effect when its listing sort is manual.
+const itemOrder = z.number().optional();
+const itemSize = z.enum(['normal', 'large', 'wide', 'tall']).optional();
+
+/**
  * Global Site Settings + Section meta (CMS Tier 1). Two singleton YAML files
  * live in src/content/settings/ — `site.yaml` (SEO defaults, analytics, contact,
  * socials, announcement bar) and `sections.yaml` (per-section copy + show/hide +
@@ -157,6 +191,27 @@ const settings = defineCollection({
       // ── about.yaml (Tier 3A) ─────────────────────────────────────
       // Optional block-composed biography. Empty = the coded prose renders.
       aboutBlocks: blocksField({ image }),
+      // ── layout.yaml (Tier 3D) ────────────────────────────────────
+      layout: z
+        .object({
+          sections: z
+            .object({
+              intro: sectionLayout,
+              featured: sectionLayout,
+              workIntro: sectionLayout,
+              storiesIntro: sectionLayout,
+              thoughtsIntro: sectionLayout,
+            })
+            .optional(),
+          grids: z
+            .object({
+              work: gridLayout,
+              stories: listLayout,
+              thoughts: listLayout,
+            })
+            .optional(),
+        })
+        .optional(),
     }),
 });
 
@@ -251,6 +306,8 @@ const work = defineCollection({
       featured: z.boolean().default(false), // shows in home "Selected Frames"
       draft: z.boolean().default(false),
       publishDate, // future = hidden until next build (2C)
+      order: itemOrder, // manual bento order (3D)
+      size: itemSize, // bento cell size when the grid sort is manual (3D)
       seo: seoFields({ image }),
     }),
 });
@@ -269,6 +326,8 @@ const narrativeSchema = ({ image }: SchemaContext) =>
     mood: z.enum(['drought', 'night', 'water']).optional(),
     draft: z.boolean().default(false),
     publishDate, // future = hidden until next build (2C)
+    order: itemOrder, // manual order (3D)
+    size: itemSize, // bento cell size when the listing sort is manual (3D)
     blocks: blocksField({ image }), // optional block body (3A); empty = markdown body renders
     seo: seoFields({ image }),
   });

@@ -4,8 +4,9 @@ import type { CollectionEntry } from 'astro:content';
 interface Props {
   entry: CollectionEntry<'thoughts'>;
   index: number;
+  size?: string;
 }
-const { entry, index } = Astro.props;
+const { entry, index, size } = Astro.props;
 const { title, date, quote } = entry.data;
 
 const raw = (entry.body ?? '')
@@ -16,7 +17,12 @@ const excerpt = raw.length > 200 ? raw.slice(0, 200).replace(/\s+\S*$/, '') + 'â
 const delay = (index % 5) * 0.07;
 ---
 
-<a class="thought-block fu" href={`/thoughts/${entry.id}/`} style={`transition-delay:${delay}s`}>
+<a
+  class="thought-block fu"
+  href={`/thoughts/${entry.id}/`}
+  style={`transition-delay:${delay}s`}
+  data-size={size}
+>
   <div class="t-loc">{date}</div>
   <h2 class="t-title">{title}</h2>
   <p class="t-body">{excerpt}</p>
