@@ -155,6 +155,11 @@ const settings = defineCollection({
           scrim: z.enum(['soft', 'medium', 'strong']).optional(),
         })
         .optional(),
+      languages: z
+        .object({
+          showSwitcher: z.boolean().default(false),
+        })
+        .optional(),
       // ── sections.yaml ────────────────────────────────────────────
       hero: z.object({ visible: z.boolean().default(true) }).optional(),
       intro: z

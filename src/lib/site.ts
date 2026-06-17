@@ -24,6 +24,7 @@ export interface SiteSettings {
   announcement: { enabled: boolean; text: string; link: string; linkLabel: string };
   connect: { eyebrow: string; heading: string; body: string; note: string };
   appearance: { accent: string; scrim: string };
+  languages: { showSwitcher: boolean };
 }
 
 /**
@@ -118,6 +119,12 @@ export async function getSiteSettings(): Promise<SiteSettings> {
     appearance: {
       accent: str(d.appearance?.accent, 'ochre'),
       scrim: str(d.appearance?.scrim, 'medium'),
+    },
+    // Hidden by default: the EN/हिं switcher only appears once the client turns
+    // it on (i.e. once Hindi content is actually being written), so it never
+    // looks broken showing English fallback.
+    languages: {
+      showSwitcher: Boolean(d.languages?.showSwitcher),
     },
   };
 }

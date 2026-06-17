@@ -209,6 +209,17 @@ collections:
                   - { label: 'Medium (default)', value: medium }
                   - { label: 'Strong', value: strong }
                 hint: 'How dark the shading over the home hero photos is, so the title stays readable.'
+          - name: languages
+            label: Languages
+            widget: object
+            collapsed: true
+            hint: 'The site is built for English + Hindi. The language switcher stays hidden until you turn it on — turn it on only once you have started adding Hindi translations, otherwise visitors would see English under the Hindi option.'
+            fields:
+              - name: showSwitcher
+                label: Show the English / हिंदी switcher
+                widget: boolean
+                default: false
+                hint: 'Off by default. Turn on once Hindi content exists.'
 
       # ---------------------------------------------------------- HOME SECTIONS
       - name: sections

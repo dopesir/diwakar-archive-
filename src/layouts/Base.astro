@@ -122,7 +122,7 @@ const localePath = Astro.url.pathname.replace(/^\/hi(?=\/|$)/, '') || '/';
     </main>
     {localePath !== '/connect/' && <ConnectCta />}
     <Footer />
-    <LangSwitcher />
+    {site.languages.showSwitcher && <LangSwitcher />}
     <Lightbox />
   </body>
 </html>
