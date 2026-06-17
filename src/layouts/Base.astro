@@ -17,7 +17,7 @@ import Lightbox from '../components/Lightbox.astro';
 import ConnectCta from '../components/ConnectCta.astro';
 import AnnouncementBar from '../components/AnnouncementBar.astro';
 import SEO from '../components/SEO.astro';
-import { getSiteSettings } from '../lib/site';
+import { getSiteSettings, themeStyle } from '../lib/site';
 
 interface Props {
   title: string;
@@ -61,10 +61,14 @@ const canonical = new URL(Astro.url.pathname, Astro.site).toString();
 
 // Announcement bar offsets the (locked) nav via a CSS class — no nav markup change.
 const showAnnounce = site.announcement.enabled && site.announcement.text.trim() !== '';
+
+// Constrained theme tokens (3B): inline CSS custom properties on <html>.
+// Empty string when everything is default, so default output is unchanged.
+const themeVars = themeStyle(site.appearance);
 ---
 
 <!doctype html>
-<html lang="en" class={showAnnounce ? 'has-announce' : undefined}>
+<html lang="en" class={showAnnounce ? 'has-announce' : undefined} style={themeVars || undefined}>
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />

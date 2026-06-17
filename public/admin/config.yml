@@ -184,6 +184,31 @@ collections:
                 widget: string
                 required: false
                 hint: 'Small line below the buttons, e.g. "Representation by invitation only · India Today Group".'
+          - name: appearance
+            label: Appearance
+            widget: object
+            collapsed: true
+            hint: 'Subtle, on-brand theme presets. These cannot break the design — there is no free colour picker.'
+            fields:
+              - name: accent
+                label: Accent colour
+                widget: select
+                default: ochre
+                options:
+                  - { label: 'Ochre (default)', value: ochre }
+                  - { label: 'Terracotta', value: terracotta }
+                  - { label: 'Rust', value: rust }
+                  - { label: 'Clay', value: clay }
+                hint: 'The highlight colour for links, buttons and labels. All options are dark enough to stay legible.'
+              - name: scrim
+                label: Hero overlay strength
+                widget: select
+                default: medium
+                options:
+                  - { label: 'Soft', value: soft }
+                  - { label: 'Medium (default)', value: medium }
+                  - { label: 'Strong', value: strong }
+                hint: 'How dark the shading over the home hero photos is, so the title stays readable.'
 
       # ---------------------------------------------------------- HOME SECTIONS
       - name: sections

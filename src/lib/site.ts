@@ -23,6 +23,35 @@ export interface SiteSettings {
   social: { instagram: SocialLink; linkedin: SocialLink; getty: SocialLink };
   announcement: { enabled: boolean; text: string; link: string; linkLabel: string };
   connect: { eyebrow: string; heading: string; body: string; note: string };
+  appearance: { accent: string; scrim: string };
+}
+
+/**
+ * Constrained theme tokens (Tier 3B). Accent is a preset from the on-brand ochre
+ * family (all dark enough to keep text contrast on parchment); scrim strength
+ * tunes the hero overlay + image brightness. `medium`/`ochre` reproduce the
+ * current design exactly, so the default emits NO override style at all.
+ */
+const ACCENT_HEX: Record<string, string> = {
+  ochre: '#b4511a', // current default
+  terracotta: '#a8431a',
+  rust: '#8a3c12',
+  clay: '#9c4214',
+};
+const SCRIM_VARS: Record<string, string> = {
+  soft: '--scrim-strength:0.7;--hero-img-bright:1;',
+  medium: '', // current defaults (no override)
+  strong: '--scrim-strength:1;--hero-img-bright:0.82;',
+};
+
+/** Inline CSS-custom-property string for <html>; '' when everything is default. */
+export function themeStyle(appearance: { accent: string; scrim: string }): string {
+  let s = '';
+  if (appearance.accent && appearance.accent !== 'ochre' && ACCENT_HEX[appearance.accent]) {
+    s += `--ochre:${ACCENT_HEX[appearance.accent]};`;
+  }
+  s += SCRIM_VARS[appearance.scrim] ?? '';
+  return s;
 }
 
 const DEFAULT_CONNECT = {
@@ -85,6 +114,10 @@ export async function getSiteSettings(): Promise<SiteSettings> {
       heading: str(d.connect?.heading, DEFAULT_CONNECT.heading),
       body: str(d.connect?.body, DEFAULT_CONNECT.body),
       note: str(d.connect?.note, DEFAULT_CONNECT.note),
+    },
+    appearance: {
+      accent: str(d.appearance?.accent, 'ochre'),
+      scrim: str(d.appearance?.scrim, 'medium'),
     },
   };
 }

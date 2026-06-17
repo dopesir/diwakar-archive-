@@ -414,7 +414,8 @@ html.has-announce .nav {
      mobile crop (falls back to the desktop value, then center). */
   object-position: var(--hs-pos, center center);
   will-change: transform;
-  filter: saturate(1) brightness(0.95);
+  /* Brightness is tied to the scrim-strength preset (3B); default 0.95 = current. */
+  filter: saturate(1) brightness(var(--hero-img-bright, 0.95));
   transform-origin: center center;
 }
 @media (max-width: 760px) {
@@ -522,7 +523,8 @@ html.has-announce .nav {
   transition: opacity 0.4s ease;
 }
 .hs-slide.hs-active .hs-scrim {
-  opacity: 1;
+  /* Scrim strength is a CMS preset (3B); default 1 = current look. */
+  opacity: var(--scrim-strength, 1);
 }
 .hs-bright .hs-scrim {
   background: linear-gradient(
@@ -604,6 +606,8 @@ html.has-announce .nav {
   inset: 0;
   z-index: 10;
   pointer-events: none;
+  /* Scales with the scrim-strength preset (3B); default 1 = current look. */
+  opacity: var(--scrim-strength, 1);
   background: linear-gradient(
     to top,
     rgba(6, 4, 1, 0.45) 0%,

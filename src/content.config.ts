@@ -113,6 +113,14 @@ const settings = defineCollection({
           note: z.string().optional(),
         })
         .optional(),
+      // Constrained theme tokens (Tier 3B). Both are presets only — no raw
+      // colour/CSS input. Defaults reproduce the current look exactly.
+      appearance: z
+        .object({
+          accent: z.enum(['ochre', 'terracotta', 'rust', 'clay']).optional(),
+          scrim: z.enum(['soft', 'medium', 'strong']).optional(),
+        })
+        .optional(),
       // ── sections.yaml ────────────────────────────────────────────
       hero: z.object({ visible: z.boolean().default(true) }).optional(),
       intro: z
