@@ -1,0 +1,1 @@
+const n="announce-dismissed",e=document.getElementById("announce-bar"),t=document.documentElement;e&&(sessionStorage.getItem(n)==="1"&&(e.hidden=!0,t.classList.remove("has-announce")),document.getElementById("announce-close")?.addEventListener("click",()=>{e.hidden=!0,t.classList.remove("has-announce");try{sessionStorage.setItem(n,"1")}catch{}}));

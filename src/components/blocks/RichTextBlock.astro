@@ -1,8 +1,0 @@
----
-// richText block (3A). Renders a safe markdown subset (src/lib/richtext.ts).
-import { renderRichText } from '../../lib/richtext';
-const { block } = Astro.props;
-const html = renderRichText(block?.markdown ?? '');
----
-
-{html && <div class="block block-rich" set:html={html} />}
