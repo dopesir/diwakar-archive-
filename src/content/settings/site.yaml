@@ -1,8 +1,5 @@
 seo:
-  defaultDescription: >-
-    Purushottam Diwakar — 27 years of photojournalism with the India Today
-    Group. A silent observer and visual archivist of the un-staged truth of
-    India.
+  defaultDescription: Purushottam Diwakar — 27 years of photojournalism with the India Today Group. A silent observer and visual archivist of the un-staged truth of India.
   ogSiteName: Purushottam Diwakar — Legacy Archive
 analytics:
   scriptUrl: ''
@@ -16,7 +13,7 @@ social:
   linkedinUrl: https://in.linkedin.com/in/purushottam-diwakar-1a9536271
   linkedinLabel: LinkedIn
   gettyUrl: https://www.gettyimages.com/photos/by-purushottam-diwakar
-  gettyLabel: Getty Images · 1,308+
+  gettyLabel: Facebook
 announcement:
   enabled: false
   text: ''
@@ -25,9 +22,7 @@ announcement:
 connect:
   eyebrow: Connect & Collaborate
   heading: Find the work online.
-  body: >-
-    For exhibitions, editorial licensing, collaborations, or limited edition
-    prints. Over 1,300 images available on Getty Images for immediate licensing.
+  body: For exhibitions, editorial licensing, collaborations, or limited edition prints. Over 1,300 images available on Getty Images for immediate licensing.
   note: Representation by invitation only · India Today Group
 appearance:
   accent: ochre

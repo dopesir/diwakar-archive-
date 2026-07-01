@@ -1,5 +1,6 @@
 ---
 title: "Monsoon That Never Came"
+image: "../../assets/stories/work-3.jpg"
 date: "Udaipur · 2007"
 year: 2007
 location: "Udaipur"

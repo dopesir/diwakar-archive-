@@ -1,31 +1,41 @@
 ---
+import { Picture } from 'astro:assets';
 import type { CollectionEntry } from 'astro:content';
+import { objectPosition } from '../lib/media';
 
 interface Props {
   entry: CollectionEntry<'stories'>;
   index: number;
-  size?: string;
 }
-const { entry, index, size } = Astro.props;
-const { title, date, quote, mood } = entry.data;
+const { entry, index } = Astro.props;
+const { title, date, image, alt, focalPoint } = entry.data;
 
-const raw = (entry.body ?? '')
-  .replace(/<!--[\s\S]*?-->/g, '')
-  .replace(/\s+/g, ' ')
-  .trim();
-const excerpt = raw.length > 200 ? raw.slice(0, 200).replace(/\s+\S*$/, '') + '…' : raw;
-const delay = (index % 5) * 0.08;
+const pos = objectPosition(focalPoint);
+const year = date ? new Date(date).getFullYear() : '';
 ---
 
-<a
-  class={`story-block fu${mood ? ' mood-' + mood : ''}`}
-  href={`/stories/${entry.id}/`}
-  style={`transition-delay:${delay}s`}
-  data-size={size}
->
-  <div class="s-date">{date}</div>
-  <h2 class="s-title">{title}</h2>
-  <p class="s-body">{excerpt}</p>
-  {quote && <div class="s-quote">{quote}</div>}
-  <span class="s-more">Read the story →</span>
+<a class="story-item fu" href={`/stories/${entry.id}/`}>
+  <div class="story-image-wrapper">
+    {
+      image && (
+        <Picture
+          src={image}
+          alt={alt ?? title}
+          style={pos ? `object-position:${pos}` : undefined}
+          widths={[800, 1200, 2000]}
+          sizes="(max-width: 900px) 100vw, 90vw"
+          formats={['avif', 'webp']}
+          fallbackFormat="jpg"
+          quality={75}
+          loading={index < 4 ? 'eager' : 'lazy'}
+          fetchpriority={index < 2 ? 'high' : 'auto'}
+          decoding="async"
+        />
+      )
+    }
+  </div>
+  <div class="story-text">
+    <h2 class="story-title">{title}</h2>
+    <span class="story-meta">{year}</span>
+  </div>
 </a>

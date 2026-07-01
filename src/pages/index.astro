@@ -1,173 +1,386 @@
 ---
-import { getCollection } from 'astro:content';
-import { getImage, Picture } from 'astro:assets';
-import Base from '../layouts/Base.astro';
-import HeroSlider from '../components/HeroSlider.astro';
-import StatCounter from '../components/StatCounter.astro';
-import Reveal from '../components/Reveal.astro';
-import { getSectionSettings } from '../lib/site';
-import { objectPosition } from '../lib/media';
-import { isPublished } from '../lib/content';
-import { getLayoutSettings, sectionAttrs } from '../lib/layout';
+import { getCollection } from "astro:content";
+import { Picture } from "astro:assets";
+import Base from "../layouts/Base.astro";
+import WorkCard from "../components/WorkCard.astro";
+import { getSectionSettings } from "../lib/site";
 
-// Section copy + show/hide + order are CMS-managed (sections.yaml). The MARKUP
-// below stays in code; only text/visibility/order is data.
 const sections = await getSectionSettings();
-// Per-section layout (3D); defaults emit no attributes (visually identical).
-const L = await getLayoutSettings();
-const orderedSections = [
-  { key: 'intro' as const, order: sections.intro.order, visible: sections.intro.visible },
-  { key: 'featured' as const, order: sections.featured.order, visible: sections.featured.visible },
-]
-  .filter((s) => s.visible)
-  .sort((a, b) => a.order - b.order);
+const { intro, stats, featured } = sections;
 
-const ordered = (await getCollection('hero')).sort((a, b) => a.data.order - b.data.order);
+const allWork = await getCollection("work");
+const featuredWork = allWork
+  .sort((a, b) => (b.data.year || 0) - (a.data.year || 0))
+  .slice(0, 4);
 
-const featured = (await getCollection('work', ({ data }) => isPublished(data)))
-  .filter((w) => w.data.featured)
-  .sort((a, b) => b.data.year - a.data.year);
+const heroSlides = await getCollection("hero");
 
-// Preload slide 1's first mobile + desktop variants (matching media) — §7.3.
-// Width/format/quality MUST match the exact variants HeroSlider emits for slide 1
-// (mobile avif 640@q54, desktop avif 1280@q52) so the preload hits a real file
-// the slider references rather than fetching an unused one (v4 bug #3).
-const s1 = ordered[0].data;
-const s1desk = await getImage({ src: s1.imageDesktop, width: 1280, format: 'avif', quality: 52 });
-const s1mob = await getImage({
-  src: s1.imageMobile ?? s1.imageDesktop,
-  width: 640,
-  format: 'avif',
-  quality: 54,
-});
-
-const description =
-  'Purushottam Diwakar — 27 years of photojournalism with the India Today Group. A silent observer and visual archivist of the un-staged truth of India.';
+const description = "Purushottam Diwakar — War Photography & Rural Movements";
 ---
 
-<Base title="Purushottam Diwakar — Legacy Archive" description={description} home={true} ogImage={s1.imageDesktop}>
-  <Fragment slot="head">
-    <link rel="preload" as="image" href={s1mob.src} type="image/avif" media="(max-width: 760px)" />
-    <link rel="preload" as="image" href={s1desk.src} type="image/avif" media="(min-width: 761px)" />
-  </Fragment>
+<Base title="Purushottam Diwakar — Legacy Archive" description={description} home={true} hideNav={false}>
+  <div class="exhibition-container">
+    <header class="museum-hero" id="museum-hero">
+      <div class="mh-bg">
+        {heroSlides.map((slide, index) => (
+          <Picture
+            src={slide.data.imageDesktop}
+            alt={slide.data.alt || "Purushottam Diwakar Archive"}
+            widths={[800, 1600, 2400]}
+            sizes="100vw"
+            formats={["avif", "webp"]}
+            fallbackFormat="jpg"
+            quality={100}
+            loading={index === 0 ? "eager" : "lazy"}
+            decoding={index === 0 ? "sync" : "async"}
+            class={`mh-img ${index === 0 ? 'active' : ''}`}
+            style={index === 0 ? "view-transition-name: hero-img;" : ""}
+          />
+        ))}
+        <div class="mh-overlay"></div>
+      </div>
+      
+      <div class="mh-ui">
+        <div class="mh-bottom-center">
+          <div class="mh-scroll-line"></div>
+          <div class="mh-scroll-text">SCROLL</div>
+        </div>
+        
+        <div class="mh-mid-left">
+          <div class="mh-caption-line"></div>
+          <div class="mh-caption" id="mh-caption">INDIA, 1987—</div>
+        </div>
+      </div>
+    </header>
 
-  {sections.hero.visible && <HeroSlider slides={ordered} />}
+    <section class="narrative-bio">
+      <div class="bio-content">
+        <div class="bio-eyebrow">{intro.eyebrow}</div>
+        
+        {intro.paragraphs.map((p) => (
+          <p class="bio-paragraph">{p}</p>
+        ))}
+        
+        <div class="bio-signature">{intro.signature}</div>
+      </div>
+    </section>
 
-  <div class="home-body">
-    {
-      orderedSections.map((s) =>
-        s.key === 'intro' ? (
-          <section class="intro-grid fu" aria-label="Introduction" {...sectionAttrs(L.sections.intro)}>
-            <div class="intro-text">
-              {sections.intro.eyebrow && <p class="eyebrow">{sections.intro.eyebrow}</p>}
-              {sections.intro.paragraphs.map((p) => (
-                <p>{p}</p>
-              ))}
-              {sections.intro.signature && <p class="sig">{sections.intro.signature}</p>}
+    {stats.visible && (
+      <section class="home-stats">
+        <div class="stats-grid">
+          {stats.items.map((s, i) => (
+            <div class="stat-item fu" style={`transition-delay: ${i * 0.15}s`}>
+              <div class="stat-value">{s.value}<span class="stat-suffix">{s.suffix}</span></div>
+              <div class="stat-label">{s.label}</div>
             </div>
-            {sections.stats.visible && <StatCounter items={sections.stats.items} />}
-          </section>
-        ) : (
-          <section class="featured fu" aria-label="Selected frames" {...sectionAttrs(L.sections.featured)}>
-            <h2 class="feat-label">{sections.featured.heading}</h2>
-            {sections.featured.intro && <p class="feat-intro">{sections.featured.intro}</p>}
-            <div class="feat-grid">
-              {featured.map((f) => (
-                <a class="feat-item" href={`/work/${f.id}/`}>
-                  <div class="feat-frame">
-                    <Picture
-                      src={f.data.image!}
-                      alt={f.data.alt ?? f.data.caption ?? f.data.title}
-                      style={objectPosition(f.data.focalPoint) ? `object-position:${objectPosition(f.data.focalPoint)}` : undefined}
-                      widths={[600, 1000, 1400]}
-                      sizes="(max-width: 760px) 92vw, (max-width: 920px) 45vw, 600px"
-                      formats={['avif', 'webp']}
-                      fallbackFormat="jpg"
-                      quality={72}
-                      loading="lazy"
-                      decoding="async"
-                    />
-                    <div class="feat-grain" />
-                    <div class="feat-veil" />
-                    <div class="feat-expand">
-                      <svg viewBox="0 0 18 18" aria-hidden="true">
-                        <path d="M2 7V2h5M11 2h5v5M16 11v5h-5M7 16H2v-5" />
-                      </svg>
-                    </div>
-                  </div>
-                  <div class="feat-cap">{f.data.title}</div>
-                  <div class="feat-yr">{f.data.year}</div>
-                </a>
-              ))}
-            </div>
-          </section>
-        ),
-      )
-    }
+          ))}
+        </div>
+      </section>
+    )}
+
+    {featured.visible && featuredWork.length > 0 && (
+      <section class="home-featured">
+        <div class="hf-header fu">
+          <h2 class="hf-title">{featured.heading}</h2>
+          <a href="/work/" class="hf-link">View Archive</a>
+        </div>
+        <div class="minimal-grid">
+          {featuredWork.map((entry, index) => (
+            <WorkCard entry={entry} index={index} />
+          ))}
+        </div>
+      </section>
+    )}
   </div>
-
-  <canvas id="dust-c" aria-hidden="true"></canvas>
-  <Reveal />
-
-  <script>
-    // Dust-mote overlay — home only, motion only, paused when the tab is hidden.
-    const cv = document.getElementById('dust-c') as HTMLCanvasElement | null;
-    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    const ctx = cv?.getContext('2d');
-    if (cv && ctx && !reduce) {
-      let W = innerWidth,
-        H = innerHeight;
-      cv.width = W;
-      cv.height = H;
-      const motes = Array.from({ length: 70 }, () => ({
-        x: Math.random() * W,
-        y: Math.random() * H,
-        r: Math.random() * 1.1 + 0.25,
-        vx: (Math.random() - 0.5) * 0.13,
-        vy: -Math.random() * 0.055 - 0.015,
-        a: Math.random() * 0.2 + 0.04,
-        life: Math.random(),
-      }));
-      let run = false,
-        raf = 0;
-      const draw = () => {
-        if (!run) return;
-        raf = requestAnimationFrame(draw);
-        ctx.clearRect(0, 0, W, H);
-        for (const m of motes) {
-          m.x += m.vx;
-          m.y += m.vy;
-          m.life += 0.0018;
-          if (m.life > 1) {
-            m.life = 0;
-            m.x = Math.random() * W;
-            m.y = H + 8;
-          }
-          const f = Math.sin(m.life * Math.PI);
-          ctx.beginPath();
-          ctx.arc(m.x, m.y, m.r, 0, 2 * Math.PI);
-          ctx.fillStyle = `rgba(200,168,120,${m.a * f})`;
-          ctx.fill();
-        }
-      };
-      const start = () => {
-        if (run) return;
-        run = true;
-        cv.classList.add('on');
-        draw();
-      };
-      const stop = () => {
-        run = false;
-        cancelAnimationFrame(raf);
-      };
-      addEventListener('resize', () => {
-        W = innerWidth;
-        H = innerHeight;
-        cv.width = W;
-        cv.height = H;
-      });
-      document.addEventListener('visibilitychange', () => (document.hidden ? stop() : start()));
-      setTimeout(start, 600);
-    }
-  </script>
 </Base>
+
+<style>
+  .exhibition-container {
+    background: var(--parch);
+    color: var(--ink);
+    min-height: 100vh;
+  }
+  
+  /* Museum Hero Section */
+  .museum-hero {
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+    background: #000;
+  }
+  
+  .mh-bg {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+  }
+  
+  .mh-img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center 50%;
+    opacity: 0;
+    transition: opacity 1.5s ease-in-out;
+    will-change: opacity;
+  }
+  
+  .mh-img.active {
+    opacity: 1;
+  }
+  
+  .mh-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top, rgba(0,0,0,0.5) 0%, rgba(0,0,0,0.1) 20%, rgba(0,0,0,0) 50%, rgba(0,0,0,0.3) 100%);
+    pointer-events: none;
+  }
+  
+  .mh-ui {
+    position: absolute;
+    inset: 0;
+    padding: 3rem;
+    pointer-events: none;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    font-family: var(--font-ui, sans-serif);
+    color: #ffffff;
+  }
+  
+  /* Top alignment spacing for the real Nav */
+  /* Bottom Center: Scroll */
+  .mh-bottom-center {
+    position: absolute;
+    bottom: 2rem;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+  }
+  .mh-scroll-line {
+    width: 1px;
+    height: 32px;
+    background-color: #ffffff;
+    opacity: 0.4;
+  }
+  .mh-scroll-text {
+    font-size: 0.65rem;
+    font-weight: 300;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    opacity: 0.8;
+  }
+
+  /* Middle Left: Caption */
+  .mh-mid-left {
+    position: absolute;
+    top: 50%;
+    left: 4rem;
+    transform: translateY(-50%);
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+    text-align: left;
+  }
+  .mh-caption-line {
+    width: 24px;
+    height: 1px;
+    background-color: #ffffff;
+    opacity: 0.6;
+  }
+  .mh-caption {
+    font-size: 0.7rem;
+    font-weight: 300;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+  }
+  
+  /* Narrative Biography */
+  .narrative-bio {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    background: #ffffff;
+    padding: 12rem 8rem;
+  }
+  
+  .bio-content {
+    max-width: 900px;
+    margin: 0;
+    font-family: var(--font-ui, sans-serif);
+    color: var(--ink);
+    display: flex;
+    flex-direction: column;
+    gap: 4rem;
+  }
+  
+  .bio-eyebrow {
+    font-size: 0.85rem;
+    letter-spacing: 0.4em;
+    text-transform: uppercase;
+    color: var(--smoke);
+    margin-bottom: 2rem;
+    position: relative;
+    padding-left: 3rem;
+  }
+  
+  .bio-eyebrow::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 50%;
+    width: 2rem;
+    height: 1px;
+    background-color: var(--smoke);
+  }
+  
+  .bio-paragraph {
+    font-size: clamp(1.5rem, 4vw, 3rem);
+    line-height: 1.4;
+    font-weight: 300;
+    margin: 0;
+    letter-spacing: -0.01em;
+    color: var(--ink);
+  }
+  
+  .bio-signature {
+    margin-top: 4rem;
+    font-size: 0.75rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--smoke);
+    text-align: right;
+  }
+  
+  @media (max-width: 1024px) {
+    .narrative-bio { padding: 8rem 4rem; }
+  }
+  @media (max-width: 768px) {
+    .mh-mid-left { left: 1.5rem; }
+    .mh-bottom-center { bottom: 1.5rem; }
+    .narrative-bio { padding: 4rem 2rem; }
+  }
+
+  /* Stats Section */
+  .home-stats {
+    padding: 6rem 8rem;
+    background: var(--parch);
+    border-top: 1px solid rgba(0,0,0,0.05);
+    border-bottom: 1px solid rgba(0,0,0,0.05);
+  }
+  .stats-grid {
+    max-width: 1400px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 4rem;
+  }
+  .stat-item {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+  .stat-value {
+    font-size: clamp(3rem, 6vw, 5.5rem);
+    font-weight: 300;
+    line-height: 1;
+    letter-spacing: -0.02em;
+    color: var(--ink);
+  }
+  .stat-suffix {
+    font-size: 0.5em;
+    vertical-align: super;
+    color: var(--smoke);
+  }
+  .stat-label {
+    font-size: 0.75rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--smoke);
+  }
+
+  /* Featured Section */
+  .home-featured {
+    padding: 12rem 0;
+    background: var(--parch);
+  }
+  .hf-header {
+    max-width: 1400px;
+    margin: 0 auto 8rem;
+    padding: 0 4rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+  }
+  .hf-title {
+    font-size: 2rem;
+    font-weight: 300;
+    margin: 0;
+    color: var(--ink);
+  }
+  .hf-link {
+    font-size: 0.75rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    text-decoration: none;
+    color: var(--smoke);
+    border-bottom: 1px solid transparent;
+    transition: all 0.3s;
+    padding-bottom: 0.2rem;
+  }
+  .hf-link:hover {
+    color: var(--ink);
+    border-bottom-color: var(--ink);
+  }
+
+  @media (max-width: 1024px) {
+    .stats-grid { grid-template-columns: repeat(2, 1fr); row-gap: 6rem; }
+    .home-stats { padding: 6rem 4rem; }
+  }
+  @media (max-width: 768px) {
+    .stats-grid { grid-template-columns: 1fr; row-gap: 4rem; }
+    .home-stats { padding: 4rem 2rem; }
+    .home-featured { padding: 8rem 0; }
+    .hf-header { padding: 0 1.5rem; flex-direction: column; align-items: flex-start; gap: 2rem; margin-bottom: 4rem; }
+  }
+</style>
+
+<script>
+  // Simple background image fader
+  document.addEventListener('astro:page-load', () => {
+    const hero = document.getElementById('museum-hero');
+    if (!hero) return;
+    
+    const images = hero.querySelectorAll('.mh-img');
+    const caption = document.getElementById('mh-caption');
+    if (images.length <= 1) return;
+    
+    // We can pull the locations from the dataset if we want to change the caption,
+    // but the user's design had a static "INDIA, 1987—" which works perfectly as an anchor.
+    
+    let currentIndex = 0;
+    let faderInterval;
+    
+    function nextImage() {
+      images[currentIndex].classList.remove('active');
+      currentIndex = (currentIndex + 1) % images.length;
+      images[currentIndex].classList.add('active');
+    }
+    
+    faderInterval = setInterval(nextImage, 5000);
+    
+    // Cleanup to prevent duplicate intervals on view transitions
+    document.addEventListener('astro:before-swap', () => {
+      clearInterval(faderInterval);
+    }, { once: true });
+  });
+</script>

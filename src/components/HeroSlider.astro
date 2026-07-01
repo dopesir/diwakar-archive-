@@ -123,6 +123,7 @@ const pad = (n: number) => String(n).padStart(2, '0');
 </section>
 
 <script>
+document.addEventListener('astro:page-load', () => {
   const hero = document.getElementById('hero');
   if (hero) {
     const track = document.getElementById('hsTrack')!;
@@ -163,9 +164,7 @@ const pad = (n: number) => String(n).padStart(2, '0');
     }
 
     function kenBurns() {
-      if (reduce) return;
-      const img = imgs[cur];
-      if (img) img.style.transform = `scale(${1 + (Math.min(elapsed, AUTO) / AUTO) * 0.05})`;
+      // Disabled for performance
     }
 
     function tick(now: number) {
@@ -257,9 +256,10 @@ const pad = (n: number) => String(n).padStart(2, '0');
       dx < 0 ? next() : prev();
     });
 
+    let io: IntersectionObserver | null = null;
     // pause when the hero scrolls out of view (also scopes the keyboard)
     if ('IntersectionObserver' in window) {
-      const io = new IntersectionObserver(
+      io = new IntersectionObserver(
         (entries) => {
           offscreen = !entries[0].isIntersecting;
           syncPause();
@@ -282,5 +282,12 @@ const pad = (n: number) => String(n).padStart(2, '0');
     render();
     paused = false;
     runLoop();
+    
+    // cleanup on view transition
+    document.addEventListener('astro:before-swap', () => {
+      stopLoop();
+      if ('IntersectionObserver' in window && io) io.disconnect();
+    }, { once: true });
   }
+});
 </script>

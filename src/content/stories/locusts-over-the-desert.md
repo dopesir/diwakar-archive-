@@ -1,5 +1,6 @@
 ---
 title: "Locusts Over the Desert"
+image: "../../assets/stories/work-2.jpg"
 date: "Barmer · 2020"
 year: 2020
 location: "Barmer"

@@ -1,55 +1,40 @@
 ---
 import { Picture } from 'astro:assets';
 import type { CollectionEntry } from 'astro:content';
-import GrainOverlay from './GrainOverlay.astro';
-import { paletteFor } from '../lib/palettes';
 import { objectPosition } from '../lib/media';
 
 interface Props {
   entry: CollectionEntry<'work'>;
   index: number;
-  /** Bento size (3D) — only set when the listing sort is manual. */
-  size?: string;
 }
-const { entry, index, size } = Astro.props;
+const { entry, index } = Astro.props;
 const { title, year, image, alt, caption, focalPoint } = entry.data;
 
-const [pa, pb] = paletteFor(index);
 const pos = objectPosition(focalPoint);
 ---
 
-<a
-  class="work-card fu"
-  href={`/work/${entry.id}/`}
-  style={`transition-delay:${(index % 6) * 0.07}s`}
-  data-size={size}
->
-  <div class="wimg">
+<a class="minimal-item fu" href={`/work/${entry.id}/`}>
+  <div class="minimal-image-wrapper">
     {
-      image ? (
+      image && (
         <Picture
           src={image}
           alt={alt ?? caption ?? title}
-          class="wimg-bg"
           style={pos ? `object-position:${pos}` : undefined}
-          widths={[400, 800, 1200]}
-          sizes="(max-width: 600px) 92vw, (max-width: 1100px) 45vw, 350px"
+          widths={[800, 1200, 2000]}
+          sizes="(max-width: 900px) 100vw, 70vw"
           formats={['avif', 'webp']}
           fallbackFormat="jpg"
-          quality={72}
-          loading="lazy"
+          quality={80}
+          loading={index < 4 ? 'eager' : 'lazy'}
+          fetchpriority={index < 2 ? 'high' : 'auto'}
           decoding="async"
         />
-      ) : (
-        <div class="wimg-bg wimg-ph ph" style={`--ph-a:${pa};--ph-b:${pb}`}>
-          <GrainOverlay opacity={0.4} />
-        </div>
       )
     }
-    <div class="wimg-veil"></div>
-    <div class="wimg-grain"></div>
-    <span class="wimg-lbl">{image ? 'View Frame' : 'Archival'}</span>
   </div>
-  <div class="wcap">{title}</div>
-  <div class="wyr">{year}</div>
+  <div class="minimal-text">
+    <span class="minimal-title">{title}</span>
+    <span class="minimal-meta">{year}</span>
+  </div>
 </a>

@@ -205,14 +205,12 @@ const settings = defineCollection({
               featured: sectionLayout,
               workIntro: sectionLayout,
               storiesIntro: sectionLayout,
-              thoughtsIntro: sectionLayout,
             })
             .optional(),
           grids: z
             .object({
               work: gridLayout,
               stories: listLayout,
-              thoughts: listLayout,
             })
             .optional(),
         })
@@ -317,7 +315,7 @@ const work = defineCollection({
     }),
 });
 
-// stories & thoughts share one schema
+// stories schema
 const narrativeSchema = ({ image }: SchemaContext) =>
   z.object({
     title: z.string(),
@@ -358,9 +356,4 @@ const stories = defineCollection({
   schema: narrativeSchema,
 });
 
-const thoughts = defineCollection({
-  loader: glob({ pattern: '**/*.md', base: './src/content/thoughts' }),
-  schema: narrativeSchema,
-});
-
-export const collections = { settings, redirects, hero, work, stories, thoughts, magazines };
+export const collections = { settings, redirects, hero, work, stories, magazines };

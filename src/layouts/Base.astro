@@ -1,19 +1,16 @@
 ---
-// Manrope variable (subsets unicode-range-gated); Cormorant trimmed to latin
+// Manrope variable (subsets unicode-range-gated)
 // for English content (§9.5). font-display:swap is the @fontsource default.
 import '@fontsource-variable/manrope';
-import '@fontsource/cormorant-garamond/latin-400.css';
-import '@fontsource/cormorant-garamond/latin-600.css';
-import '@fontsource/cormorant-garamond/latin-300-italic.css';
-import '@fontsource/cormorant-garamond/latin-400-italic.css';
 import '../styles/global.css';
+import { ClientRouter } from 'astro:transitions';
 
 import type { ImageMetadata } from 'astro';
-import defaultOg from '../assets/hero/desktop/01-diwali-lanterns-jaipur.jpg';
+import defaultOg from '../assets/hero/desktop/DSC_1209.jpg';
 import Nav from '../components/Nav.astro';
 import Footer from '../components/Footer.astro';
-import CustomCursor from '../components/CustomCursor.astro';
 import Lightbox from '../components/Lightbox.astro';
+import Reveal from '../components/Reveal.astro';
 import ConnectCta from '../components/ConnectCta.astro';
 import AnnouncementBar from '../components/AnnouncementBar.astro';
 import SEO from '../components/SEO.astro';
@@ -27,6 +24,7 @@ interface Props {
   ogType?: string;
   /** Home page only: nav starts transparent over the hero, then turns solid on scroll. */
   home?: boolean;
+  hideNav?: boolean;
   /** Optional per-page/entry SEO overrides (Tier 1C). Each falls back when blank. */
   seoTitle?: string;
   seoDescription?: string;
@@ -40,6 +38,7 @@ const {
   ogImage,
   ogType = 'website',
   home = false,
+  hideNav = false,
   seoTitle,
   seoDescription,
   shareImage,
@@ -94,6 +93,7 @@ const localePath = Astro.url.pathname.replace(/^\/hi(?=\/|$)/, '') || '/';
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="theme-color" content="#0a0806" />
     <meta name="generator" content={Astro.generator} />
+    <ClientRouter />
 
     {
       /* Privacy-friendly analytics — external (never inline, CSP-safe), rendered
@@ -110,13 +110,67 @@ const localePath = Astro.url.pathname.replace(/^\/hi(?=\/|$)/, '') || '/';
       )
     }
 
+    <script type="application/ld+json" set:html={JSON.stringify({
+      "@context": "https://schema.org",
+      "@graph": [
+        {
+          "@type": "WebSite",
+          "@id": `${Astro.site}#website`,
+          "url": Astro.site,
+          "name": site.seo.ogSiteName,
+          "description": site.seo.defaultDescription,
+          "publisher": {
+            "@id": `${Astro.site}#person`
+          }
+        },
+        {
+          "@type": "Person",
+          "@id": `${Astro.site}#person`,
+          "name": "Purushottam Diwakar",
+          "url": Astro.site,
+          "jobTitle": "Photojournalist",
+          "description": "Purushottam Diwakar is a renowned photojournalist and war photographer based in India, documenting rural movements, politics, and historical events."
+        }
+      ]
+    })} />
+
     <slot name="head" />
+
+    <script>
+      // ── ANTI-THEFT SECURITY PROFILE ────────────────────────────
+      // Protect assets by disabling context menus and common scraping shortcuts.
+      
+      // 1. Disable Right-Click (Context Menu)
+      document.addEventListener('contextmenu', (e) => e.preventDefault());
+      
+      // 2. Disable Keyboard Shortcuts (Save, Print, DevTools)
+      document.addEventListener('keydown', (e) => {
+        const isMac = navigator.platform.toUpperCase().indexOf('MAC') >= 0;
+        const cmdOrCtrl = isMac ? e.metaKey : e.ctrlKey;
+        
+        // Block Cmd/Ctrl + S (Save Page)
+        if (cmdOrCtrl && e.key.toLowerCase() === 's') {
+          e.preventDefault();
+        }
+        // Block Cmd/Ctrl + P (Print / Print to PDF)
+        if (cmdOrCtrl && e.key.toLowerCase() === 'p') {
+          e.preventDefault();
+        }
+        // Block F12 (DevTools)
+        if (e.key === 'F12') {
+          e.preventDefault();
+        }
+        // Block Cmd+Option+I / Ctrl+Shift+I (DevTools)
+        if (cmdOrCtrl && (e.shiftKey || e.altKey) && e.key.toLowerCase() === 'i') {
+          e.preventDefault();
+        }
+      });
+    </script>
   </head>
   <body>
     <a href="#main" class="skip-link">Skip to content</a>
-    <CustomCursor />
     <AnnouncementBar />
-    <Nav home={home} path={localePath} />
+    {!hideNav && <Nav home={home} path={localePath} />}
     <main id="main">
       <slot />
     </main>
@@ -124,5 +178,6 @@ const localePath = Astro.url.pathname.replace(/^\/hi(?=\/|$)/, '') || '/';
     <Footer />
     {site.languages.showSwitcher && <LangSwitcher />}
     <Lightbox />
+    <Reveal />
   </body>
 </html>

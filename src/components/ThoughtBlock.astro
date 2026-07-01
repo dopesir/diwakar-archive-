@@ -4,28 +4,21 @@ import type { CollectionEntry } from 'astro:content';
 interface Props {
   entry: CollectionEntry<'thoughts'>;
   index: number;
-  size?: string;
 }
-const { entry, index, size } = Astro.props;
-const { title, date, quote } = entry.data;
+const { entry } = Astro.props;
+const { title, date } = entry.data;
 
 const raw = (entry.body ?? '')
   .replace(/<!--[\s\S]*?-->/g, '')
   .replace(/\s+/g, ' ')
   .trim();
 const excerpt = raw.length > 200 ? raw.slice(0, 200).replace(/\s+\S*$/, '') + '…' : raw;
-const delay = (index % 5) * 0.07;
 ---
 
-<a
-  class="thought-block fu"
-  href={`/thoughts/${entry.id}/`}
-  style={`transition-delay:${delay}s`}
-  data-size={size}
->
-  <div class="t-loc">{date}</div>
-  <h2 class="t-title">{title}</h2>
-  <p class="t-body">{excerpt}</p>
-  {quote && <div class="s-quote">{quote}</div>}
-  <span class="s-more">Read the reflection →</span>
+<a class="exhibition-item" href={`/thoughts/${entry.id}/`} data-reveal style="justify-content: center; text-align: center;">
+  <div style="max-width: 800px; padding: 10vh 0;">
+    <span class="exhibition-meta" style="margin-bottom: 2rem;">{date}</span>
+    <span class="exhibition-title" style="font-size: clamp(2rem, 4vw, 5rem);">{title}</span>
+    <p style="margin-top: 2rem; opacity: 0.8; font-weight: 300;">{excerpt}</p>
+  </div>
 </a>

@@ -21,6 +21,7 @@ interface Props {
   placeholderIndex?: number;
   prev?: NavLink | null;
   next?: NavLink | null;
+  transitionName?: string;
 }
 const {
   kind,
@@ -34,6 +35,7 @@ const {
   placeholderIndex = 0,
   prev,
   next,
+  transitionName,
 } = Astro.props;
 
 const meta = metaItems.filter(Boolean) as string[];
@@ -82,6 +84,7 @@ const big = image && lightbox ? await getImage({ src: image, width: 1600, format
             quality={74}
             loading="eager"
             fetchpriority="high"
+            
           />
           <GrainOverlay opacity={0.45} baseFrequency={0.9} />
         </figure>

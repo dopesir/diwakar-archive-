@@ -1,5 +1,6 @@
 ---
 title: "The Dharavi Diary"
+image: "../../assets/stories/work-8.jpg"
 date: "Mumbai · 2016"
 year: 2016
 location: "Mumbai"

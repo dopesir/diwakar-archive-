@@ -1,5 +1,6 @@
 ---
 title: "The Floods of Silence"
+image: "../../assets/stories/work-9.jpg"
 date: "Kerala · 2018"
 year: 2018
 location: "Kerala"

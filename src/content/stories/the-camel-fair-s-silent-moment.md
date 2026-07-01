@@ -1,5 +1,6 @@
 ---
 title: "The Camel Fair’s Silent Moment"
+image: "../../assets/stories/work-7.jpg"
 date: "Pushkar · 2009"
 year: 2009
 location: "Pushkar"

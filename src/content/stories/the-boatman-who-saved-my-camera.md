@@ -1,5 +1,6 @@
 ---
 title: "The Boatman Who Saved My Camera"
+image: "../../assets/stories/work-6.jpg"
 date: "Varanasi · 2014"
 year: 2014
 location: "Varanasi"

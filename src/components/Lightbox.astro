@@ -14,20 +14,21 @@
   <button class="lb-btn lb-next" id="lbNext" aria-label="Next photo">
     <svg viewBox="0 0 26 26" aria-hidden="true"><polyline points="9,4 17,13 9,22"></polyline></svg>
   </button>
-  <div class="lb-cap" id="lbCap"></div>
-  <div class="lb-idx" id="lbIdx"></div>
+  <div class="lb-cap" id="lbCap" aria-live="polite"></div>
+  <div class="lb-idx" id="lbIdx" aria-live="polite"></div>
 </div>
 
 <script>
-  const lb = document.getElementById('lb');
-  const lbImg = document.getElementById('lbImg') as HTMLImageElement | null;
-  const lbCap = document.getElementById('lbCap');
-  const lbIdx = document.getElementById('lbIdx');
-  const lbClose = document.getElementById('lbClose');
-  const lbPrev = document.getElementById('lbPrev');
-  const lbNext = document.getElementById('lbNext');
+  document.addEventListener('astro:page-load', () => {
+    const lb = document.getElementById('lb');
+    const lbImg = document.getElementById('lbImg') as HTMLImageElement | null;
+    const lbCap = document.getElementById('lbCap');
+    const lbIdx = document.getElementById('lbIdx');
+    const lbClose = document.getElementById('lbClose');
+    const lbPrev = document.getElementById('lbPrev');
+    const lbNext = document.getElementById('lbNext');
 
-  if (lb && lbImg && lbCap && lbIdx) {
+    if (lb && lbImg && lbCap && lbIdx) {
     type Item = { src: string; cap: string };
     let items: Item[] = [];
     let i = 0;
@@ -134,4 +135,5 @@
       dx < 0 ? next() : prev();
     });
   }
+});
 </script>

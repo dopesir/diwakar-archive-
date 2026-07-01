@@ -1,5 +1,6 @@
 ---
 title: "Election Night Riot"
+image: "../../assets/stories/work-1.jpg"
 date: "Jaipur · 2013"
 year: 2013
 location: "Jaipur"

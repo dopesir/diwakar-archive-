@@ -22,6 +22,20 @@ const descBase = caption ?? `${title}${location ? ' — ' + location : ''} · ${
 const description = `${descBase}. From the Purushottam Diwakar Legacy Archive.`;
 const prevLink = prev ? { href: `/work/${prev.id}/`, title: prev.data.title } : null;
 const nextLink = next ? { href: `/work/${next.id}/`, title: next.data.title } : null;
+const schema = {
+  "@context": "https://schema.org",
+  "@type": "VisualArtwork",
+  "name": title,
+  "artMedium": "Photography",
+  "dateCreated": String(year),
+  "creator": {
+    "@type": "Person",
+    "name": "Purushottam Diwakar"
+  },
+  ...(image && { "image": new URL(image.src, Astro.site || 'https://diwakar-archive.pages.dev').toString() }),
+  ...(description && { "description": description }),
+  ...(location && { "locationCreated": { "@type": "Place", "name": location } })
+};
 ---
 
 <Base
@@ -34,6 +48,9 @@ const nextLink = next ? { href: `/work/${next.id}/`, title: next.data.title } : 
   shareImage={seo?.shareImage}
   noindex={seo?.noindex}
 >
+  <Fragment slot="head">
+    <script type="application/ld+json" set:html={JSON.stringify(schema)} />
+  </Fragment>
   <DetailLayout
     kind="Work"
     baseHref="/work/"
@@ -45,6 +62,7 @@ const nextLink = next ? { href: `/work/${next.id}/`, title: next.data.title } : 
     placeholderIndex={index}
     prev={prevLink}
     next={nextLink}
+    transitionName={`img-${entry.id}`}
   >
     <Content />
   </DetailLayout>

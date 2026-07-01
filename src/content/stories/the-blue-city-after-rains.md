@@ -1,5 +1,6 @@
 ---
 title: "The Blue City After Rains"
+image: "../../assets/stories/work-5.jpg"
 date: "Jodhpur · 2014"
 year: 2014
 location: "Jodhpur"

@@ -9,14 +9,14 @@ const links = [
   { href: '/', label: 'Home', active: path === '/' },
   { href: '/work/', label: 'Work', active: path.startsWith('/work') },
   { href: '/stories/', label: 'Stories', active: path.startsWith('/stories') },
-  { href: '/thoughts/', label: 'Thoughts', active: path.startsWith('/thoughts') },
+  { href: '/india-today/', label: 'India Today', active: path.startsWith('/india-today') },
   { href: '/about/', label: 'About', active: path.startsWith('/about') },
   { href: '/connect/', label: 'Connect', active: path.startsWith('/connect') },
 ];
 ---
 
 <nav class={`nav ${home ? 'over-hero' : 'solid'}`} id="nav" data-home={home ? 'true' : 'false'}>
-  <a href="/" class="logo">P. Diwakar · Archive</a>
+  <a href="/" class="logo">PURUSHOTTAM DIWAKAR</a>
   <button
     class="menu-toggle"
     id="menu-btn"
@@ -40,41 +40,43 @@ const links = [
 </nav>
 
 <script>
-  const nav = document.getElementById('nav');
-  const btn = document.getElementById('menu-btn');
-  const list = document.getElementById('nav-links');
+  document.addEventListener('astro:page-load', () => {
+    const nav = document.getElementById('nav');
+    const btn = document.getElementById('menu-btn');
+    const list = document.getElementById('nav-links');
 
-  function setOpen(open: boolean) {
-    list?.classList.toggle('open', open);
-    btn?.setAttribute('aria-expanded', open ? 'true' : 'false');
-    btn?.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
-  }
+    function setOpen(open: boolean) {
+      list?.classList.toggle('open', open);
+      btn?.setAttribute('aria-expanded', open ? 'true' : 'false');
+      btn?.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
+    }
 
-  btn?.addEventListener('click', () => setOpen(!list?.classList.contains('open')));
+    btn?.addEventListener('click', () => setOpen(!list?.classList.contains('open')));
 
-  // close the mobile menu on outside tap / Escape
-  document.addEventListener('click', (e) => {
-    if (!list?.classList.contains('open')) return;
-    const t = e.target;
-    if (t instanceof Node && nav?.contains(t)) return;
-    setOpen(false);
-  });
-  document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape' && list?.classList.contains('open')) {
+    // close the mobile menu on outside tap / Escape
+    document.addEventListener('click', (e) => {
+      if (!list?.classList.contains('open')) return;
+      const t = e.target;
+      if (t instanceof Node && nav?.contains(t)) return;
       setOpen(false);
-      btn?.focus();
+    });
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && list?.classList.contains('open')) {
+        setOpen(false);
+        btn?.focus();
+      }
+    });
+
+    // Home: transparent over the hero, solid once scrolled past it.
+    if (nav?.dataset.home === 'true') {
+      const update = () => {
+        const hero = document.getElementById('hero');
+        const heroH = hero?.offsetHeight || 600;
+        nav.className = window.scrollY < heroH - 80 ? 'nav over-hero' : 'nav solid';
+      };
+      update();
+      window.addEventListener('scroll', update, { passive: true });
+      window.addEventListener('resize', update);
     }
   });
-
-  // Home: transparent over the hero, solid once scrolled past it.
-  if (nav?.dataset.home === 'true') {
-    const update = () => {
-      const hero = document.getElementById('hero');
-      const heroH = hero?.offsetHeight || 600;
-      nav.className = window.scrollY < heroH - 80 ? 'nav over-hero' : 'nav solid';
-    };
-    update();
-    window.addEventListener('scroll', update, { passive: true });
-    window.addEventListener('resize', update);
-  }
 </script>

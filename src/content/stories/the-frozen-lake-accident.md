@@ -1,5 +1,6 @@
 ---
 title: "The Frozen Lake Accident"
+image: "../../assets/stories/work-10.jpg"
 date: "Himachal · 2017"
 year: 2017
 location: "Himachal"

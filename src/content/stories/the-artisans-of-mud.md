@@ -1,5 +1,6 @@
 ---
 title: "The Artisans of Mud"
+image: "../../assets/stories/work-4.jpg"
 date: "Kutch · 2016"
 year: 2016
 location: "Kutch"

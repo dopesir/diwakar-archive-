@@ -9,31 +9,6 @@ import { isPublished } from '../lib/content';
 import { getAboutBlocks } from '../lib/site';
 
 import portrait from '../assets/about/portrait.png';
-import imagineLogo from '../assets/about/imagine-logo.png';
-import imagineSociety from '../assets/about/imagine-society.png';
-import openingCeremony from '../assets/about/opening-ceremony.jpg';
-import seminarStage from '../assets/about/seminar-stage.png';
-import pressJeene from '../assets/about/press-jeene-ka-andaaz.jpg';
-import pressClip from '../assets/about/press-clip.png';
-import fieldWork from '../assets/about/field-work.png';
-
-// Magazines in the press strip are CMS-managed (Magazines collection).
-const magazines = (await getCollection('magazines'))
-  .filter((m) => isPublished(m.data))
-  .sort((a, b) => a.data.order - b.data.order);
-
-// full-size variants for the lightbox
-const lb = async (src: ImageMetadata) =>
-  (await getImage({ src, width: 1600, format: 'webp', quality: 80 })).src;
-const [lbSociety, lbOpening, lbSeminar, lbJeene, lbClip, lbField] = await Promise.all([
-  lb(imagineSociety),
-  lb(openingCeremony),
-  lb(seminarStage),
-  lb(pressJeene),
-  lb(pressClip),
-  lb(fieldWork),
-]);
-
 // Biography can be composed from CMS blocks (3A). Empty = the coded prose below.
 const aboutBlocks = await getAboutBlocks();
 
@@ -44,7 +19,7 @@ const description =
 <Base title="About — Purushottam Diwakar" description={description} ogImage={portrait}>
   <div class="sec">
     <div class="about-wrap fu">
-      <div class="about-text">
+      <div class="about-text" data-reveal>
         <p class="sec-eyebrow">Biography</p>
         <h1>Observer.<br />Humanist.<br />Archivist.</h1>
         {
@@ -76,7 +51,7 @@ const description =
           )
         }
       </div>
-      <div class="portrait-box">
+      <div class="portrait-box" data-reveal>
         <Image
           src={portrait}
           alt="Portrait of Purushottam Diwakar"
@@ -89,71 +64,7 @@ const description =
       </div>
     </div>
 
-    <!-- IMAGINE PHOTOJOURNALIST SOCIETY -->
-    <section class="imagine-sec fu" aria-label="Imagine Photojournalist Society">
-      <div class="imagine-hdr">
-        <Image class="imagine-logo" src={imagineLogo} alt="Imagine Photojournalist Society logo" loading="lazy" />
-        <div class="imagine-hdr-text">
-          <h2>Imagine Photojournalist Society</h2>
-          <p>Founded 2012 · Jaipur, India · Camera Commandos Initiative</p>
-        </div>
-      </div>
-      <div class="imagine-body">
-        <div class="imagine-copy">
-          <p>
-            Founded by Purushottam Diwakar, the Imagine Photojournalist Society is dedicated to
-            training the next generation of visual storytellers — with a special focus on women in
-            crisis journalism.
-          </p>
-          <p>
-            The “Camera Commandos” programme trains female photojournalists to document conflict
-            zones, natural disasters, and human-interest stories. Seminars and field training have
-            shaped hundreds of photographers across Rajasthan.
-          </p>
-          <span class="imagine-pill">Camera Commandos</span>
-        </div>
-        <div class="imagine-imgs">
-          <button class="imagine-img-wrap" data-lb={lbSociety} data-lbcap="Imagine Photojournalist Society" aria-label="View photo: Imagine Photojournalist Society">
-            <Image src={imagineSociety} alt="Imagine Photojournalist Society" widths={[400, 800]} sizes="(max-width: 900px) 50vw, 300px" loading="lazy" />
-          </button>
-          <button class="imagine-img-wrap" data-lb={lbOpening} data-lbcap="Imagine Society — Opening Ceremony" aria-label="View photo: Opening Ceremony">
-            <Image src={openingCeremony} alt="Imagine Society — Opening Ceremony" widths={[400, 800]} sizes="(max-width: 900px) 50vw, 300px" loading="lazy" />
-          </button>
-          <button class="imagine-img-wrap" data-lb={lbSeminar} data-lbcap="Imagine Society — Seminar Stage" aria-label="View photo: Seminar Stage">
-            <Image src={seminarStage} alt="Imagine Society — Seminar Stage" widths={[400, 800]} sizes="(max-width: 900px) 50vw, 300px" loading="lazy" />
-          </button>
-        </div>
-      </div>
-
-      <div class="press-strip">
-        <p class="press-strip-lbl">Press &amp; Recognition</p>
-        <div class="press-row">
-          {
-            magazines.map((m) => (
-              <a
-                class="press-img-wrap"
-                href={m.data.link}
-                target="_blank"
-                rel="noopener"
-                aria-label={`Read ${m.data.title} in the flipbook reader (opens in a new tab)`}
-              >
-                <Image src={m.data.cover} alt={`${m.data.title} cover`} widths={[300, 560]} sizes="260px" loading="lazy" />
-                <span class="flip-badge">{m.data.badge} · Flipbook</span>
-              </a>
-            ))
-          }
-          <button class="press-img-wrap" data-lb={lbJeene} data-lbcap="Jeene Ka Andaaz · Press Coverage" aria-label="View press clipping: Jeene Ka Andaaz">
-            <Image src={pressJeene} alt="Jeene Ka Andaaz press coverage" widths={[300, 560]} sizes="260px" loading="lazy" />
-          </button>
-          <button class="press-img-wrap" data-lb={lbClip} data-lbcap="Press Coverage · Purushottam Diwakar" aria-label="View press clipping: Press Coverage">
-            <Image src={pressClip} alt="Press coverage" widths={[260, 460]} sizes="200px" loading="lazy" />
-          </button>
-          <button class="press-img-wrap" data-lb={lbField} data-lbcap="Purushottam Diwakar · Field Work" aria-label="View photo: Field Work">
-            <Image src={fieldWork} alt="Field work" widths={[260, 460]} sizes="200px" loading="lazy" />
-          </button>
-        </div>
-      </div>
-    </section>
+    <!-- End Biography -->
   </div>
   <Reveal />
 </Base>

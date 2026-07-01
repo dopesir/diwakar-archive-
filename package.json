@@ -16,7 +16,9 @@
     "@astrojs/sitemap": "^3",
     "@fontsource-variable/manrope": "^5",
     "@fontsource/cormorant-garamond": "^5",
-    "astro": "^5"
+    "@studio-freight/lenis": "^1.0.42",
+    "astro": "^5",
+    "gsap": "^3.15.0"
   },
   "devDependencies": {
     "sharp": "^0.33"
